@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Wed, 21 Aug 2024 23:16:21 +0200
+Subject: [PATCH] add PlayerData
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 992437a6e838f653f32d33b5b3f702c484640a97..067e20828ec26902d99fe6bc31e31d78a6c44919 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -192,6 +192,7 @@ import org.bukkit.scoreboard.Scoreboard;
+ import org.jetbrains.annotations.NotNull;
+ 
+ import net.md_5.bungee.api.chat.BaseComponent; // Spigot
++import world.estaria.paper.player.PlayerData; // forktest
+ 
+ @DelegateDeserialization(CraftOfflinePlayer.class)
+ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -202,6 +203,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     private final Set<String> channels = new HashSet<String>();
+     private final Map<UUID, Set<WeakReference<Plugin>>> invertedVisibilityEntities = new HashMap<>();
+     private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
++    private final PlayerData playerData = new PlayerData(); // forktest - add player data
+     private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
+     private int hash = 0;
+     private double health = 20;
+@@ -3092,6 +3094,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getHandle().adventure$displayName = displayName != null ? displayName : net.kyori.adventure.text.Component.text(this.getName());
+         this.getHandle().displayName = null;
+     }
++    // Paper end
++
++    // forktes tstart
++    @Override
++    public PlayerData getPlayerData() {
++        return this.playerData;
++    }
++    // forktest end
++
++    // Paper start
+ 
+     @Override
+     public void deleteMessage(net.kyori.adventure.chat.SignedMessage.Signature signature) {

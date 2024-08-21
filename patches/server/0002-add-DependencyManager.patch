@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Wed, 21 Aug 2024 22:56:10 +0200
+Subject: [PATCH] add DependencyManager
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index c8b82bc41f2042bb4b067f06265a3a22e51f7629..bd7b0b7eb3ef458acb9dbb52415dc871165a75aa 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -261,6 +261,7 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
+ import org.yaml.snakeyaml.error.MarkedYAMLException;
+ 
+ import net.md_5.bungee.api.chat.BaseComponent; // Spigot
++import world.estaria.paper.DependencyManager; // forktest
+ 
+ import javax.annotation.Nullable; // Paper
+ import javax.annotation.Nonnull; // Paper
+@@ -316,6 +317,10 @@ public final class CraftServer implements Server {
+     private final io.papermc.paper.threadedregions.scheduler.FoliaAsyncScheduler asyncScheduler = new io.papermc.paper.threadedregions.scheduler.FoliaAsyncScheduler();
+     private final io.papermc.paper.threadedregions.scheduler.FoliaGlobalRegionScheduler globalRegionScheduler = new io.papermc.paper.threadedregions.scheduler.FoliaGlobalRegionScheduler();
+ 
++    // forktest start - add dependency manager
++    private final DependencyManager dependencyManager = new DependencyManager();
++    // forktest end
++
+     @Override
+     public final io.papermc.paper.threadedregions.scheduler.RegionScheduler getRegionScheduler() {
+         return this.regionizedScheduler;
+@@ -648,6 +653,13 @@ public final class CraftServer implements Server {
+         return this.serverName;
+     }
+ 
++    // forktest start
++    @Override
++    public DependencyManager getDependencyManager() {
++        return this.dependencyManager;
++    }
++    // forktest end
++
+     @Override
+     public String getVersion() {
+         return this.serverVersion + " (MC: " + this.console.getServerVersion() + ")";

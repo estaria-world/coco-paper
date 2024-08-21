@@ -1,0 +1,74 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Wed, 21 Aug 2024 23:16:21 +0200
+Subject: [PATCH] add PlayerData
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 7c56182acaf827f4b1a986a61cea8e9960604c98..a9671a7a96fce62cb445263b0b121f6f7827e99e 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -53,6 +53,7 @@ import org.bukkit.scoreboard.Scoreboard;
+ import org.jetbrains.annotations.ApiStatus;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
++import world.estaria.paper.player.PlayerData; // forktest
+ 
+ /**
+  * Represents a player, connected or not
+@@ -93,6 +94,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+     void displayName(final net.kyori.adventure.text.@Nullable Component displayName);
+     // Paper end
+ 
++    // forktest start
++    /**
++     * @return a [PlayerData] object which can hold
++     * arbitrary data from different methods.
++     */
++    PlayerData getPlayerData();
++    // forktest end
++
+     /**
+      * {@inheritDoc}
+      */
+diff --git a/src/main/java/world/estaria/paper/player/PlayerData.java b/src/main/java/world/estaria/paper/player/PlayerData.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f07ff1b6e9d3bc53b4060b03c3e424c3d000f1f1
+--- /dev/null
++++ b/src/main/java/world/estaria/paper/player/PlayerData.java
+@@ -0,0 +1,35 @@
++package world.estaria.paper.player;
++
++import org.jetbrains.annotations.Nullable;
++
++import java.util.concurrent.ConcurrentHashMap;
++
++public class PlayerData {
++
++    private final ConcurrentHashMap<String, Object> hashMap = new ConcurrentHashMap<>();
++
++    public <T> T get(String key) {
++        return (T) this.hashMap.get(key);
++    }
++
++    public <T> @Nullable T getOrNull(String key) {
++        return (T) this.hashMap.get(key);
++    }
++
++    public boolean exist(String key) {
++        return this.hashMap.containsKey(key);
++    }
++
++    public void set(String key, Object value) {
++        this.hashMap.put(key, value);
++    }
++
++    public void remove(String key) {
++        this.hashMap.remove(key);
++    }
++
++    public void addInt(String key, int value) {
++        this.hashMap.computeIfPresent(key, (k, v) -> (Integer) v + value);
++    }
++
++}
