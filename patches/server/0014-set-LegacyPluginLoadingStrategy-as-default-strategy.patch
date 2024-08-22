@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 16:42:05 +0200
+Subject: [PATCH] set LegacyPluginLoadingStrategy as default strategy
+
+
+diff --git a/src/main/java/io/papermc/paper/command/subcommands/DumpPluginsCommand.java b/src/main/java/io/papermc/paper/command/subcommands/DumpPluginsCommand.java
+index d4a092243e587e3a555fbc0f00c8f78c00b3d1c6..f9873882a260e69ba8434b9abfe36902ae7499a0 100644
+--- a/src/main/java/io/papermc/paper/command/subcommands/DumpPluginsCommand.java
++++ b/src/main/java/io/papermc/paper/command/subcommands/DumpPluginsCommand.java
+@@ -86,9 +86,12 @@ public final class DumpPluginsCommand implements PaperSubcommand {
+ 
+     private JsonObject writeDebug() {
+         JsonObject root = new JsonObject();
+-        if (ConfiguredProviderStorage.LEGACY_PLUGIN_LOADING) {
+-            root.addProperty("legacy-loading-strategy", true);
+-        }
++        // forktest start
++        //if (ConfiguredProviderStorage.LEGACY_PLUGIN_LOADING) {
++        //    root.addProperty("legacy-loading-strategy", true);
++        //}
++        root.addProperty("legacy-loading-strategy", true);
++        //forktest end
+ 
+         this.writeProviders(root);
+         this.writePlugins(root);
+diff --git a/src/main/java/io/papermc/paper/plugin/storage/ConfiguredProviderStorage.java b/src/main/java/io/papermc/paper/plugin/storage/ConfiguredProviderStorage.java
+index 8ef4806cadabe56264dd861f1a1854b2354b3b5c..286e0cbba5f7f55deb0b6e405c42b4b068e64541 100644
+--- a/src/main/java/io/papermc/paper/plugin/storage/ConfiguredProviderStorage.java
++++ b/src/main/java/io/papermc/paper/plugin/storage/ConfiguredProviderStorage.java
+@@ -6,12 +6,18 @@ import io.papermc.paper.plugin.entrypoint.strategy.ProviderConfiguration;
+ 
+ public abstract class ConfiguredProviderStorage<T> extends SimpleProviderStorage<T> {
+ 
+-    public static final boolean LEGACY_PLUGIN_LOADING = Boolean.getBoolean("paper.useLegacyPluginLoading");
++    // forktest start
++    // public static final boolean LEGACY_PLUGIN_LOADING = Boolean.getBoolean("paper.useLegacyPluginLoading");
++    // forktest end
+ 
+     protected ConfiguredProviderStorage(ProviderConfiguration<T> onLoad) {
+         // This doesn't work with reloading.
+         // Should we care?
+-        super(LEGACY_PLUGIN_LOADING ? new LegacyPluginLoadingStrategy<>(onLoad) : new ModernPluginLoadingStrategy<>(onLoad));
++
++        // forktest start
++        //super(LEGACY_PLUGIN_LOADING ? new LegacyPluginLoadingStrategy<>(onLoad) : new ModernPluginLoadingStrategy<>(onLoad));
++        super(new LegacyPluginLoadingStrategy<>(onLoad));
++        // forktest end
+     }
+ 
+ }
