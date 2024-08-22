@@ -1,0 +1,119 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 09:23:52 +0200
+Subject: [PATCH] add missing annotations in DependencyManager and PlayerData
+
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 43c9557032d53adc77240ee31667347d5f3af112..f45115d776745c5972aa85f5947f7004b9d49a41 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -89,6 +89,7 @@ public final class Bukkit {
+      * Returns the global plugin class loader dependency manager
+      * @return dependency manager instance
+      */
++    @NotNull
+     public static DependencyManager getDependencyManager() {
+         return server.getDependencyManager();
+     }
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 59c196ec390ef392957d7ac7b198b542e870bf4f..d881c3afa691ad8924c4df7f5d0400110a1a873e 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -106,7 +106,8 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+     public String getName();
+ 
+     // forktest start - add dependency manager
+-    DependencyManager getDependencyManager();
++    @NotNull
++    public DependencyManager getDependencyManager();
+     // forktest end
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index a9671a7a96fce62cb445263b0b121f6f7827e99e..fefdceb0f16118cf62517f4cacea61eb03bce979 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -99,6 +99,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @return a [PlayerData] object which can hold
+      * arbitrary data from different methods.
+      */
++    @NotNull
+     PlayerData getPlayerData();
+     // forktest end
+ 
+diff --git a/src/main/java/world/estaria/paper/DependencyManager.java b/src/main/java/world/estaria/paper/DependencyManager.java
+index 72c642b6af47ce89ff4b95580b482f3f525bf27e..a8c8dfa7af2a64c0b66b8d49a1d5b5f4ef10a3f0 100644
+--- a/src/main/java/world/estaria/paper/DependencyManager.java
++++ b/src/main/java/world/estaria/paper/DependencyManager.java
+@@ -1,5 +1,7 @@
+ package world.estaria.paper;
+ 
++import org.jetbrains.annotations.NotNull;
++
+ import java.io.File;
+ import java.net.MalformedURLException;
+ import java.net.URL;
+@@ -24,6 +26,7 @@ public class DependencyManager {
+         }
+     }
+ 
++    @NotNull
+     public List<URL> getDependencyUrls() {
+         return getDependencyFiles().stream().map(file -> {
+             try {
+@@ -34,6 +37,7 @@ public class DependencyManager {
+         }).toList();
+     }
+ 
++    @NotNull
+     public List<File> getDependencyFiles() {
+         return Arrays.stream(Objects.requireNonNull(this.directory.listFiles()))
+             .filter(File::isFile)
+diff --git a/src/main/java/world/estaria/paper/player/PlayerData.java b/src/main/java/world/estaria/paper/player/PlayerData.java
+index f07ff1b6e9d3bc53b4060b03c3e424c3d000f1f1..5f6541357ca021b5d42583745386f28a21b30b67 100644
+--- a/src/main/java/world/estaria/paper/player/PlayerData.java
++++ b/src/main/java/world/estaria/paper/player/PlayerData.java
+@@ -1,5 +1,6 @@
+ package world.estaria.paper.player;
+ 
++import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+ 
+ import java.util.concurrent.ConcurrentHashMap;
+@@ -8,27 +9,29 @@ public class PlayerData {
+ 
+     private final ConcurrentHashMap<String, Object> hashMap = new ConcurrentHashMap<>();
+ 
+-    public <T> T get(String key) {
++    @NotNull
++    public <T> T get(@NotNull String key) {
+         return (T) this.hashMap.get(key);
+     }
+ 
+-    public <T> @Nullable T getOrNull(String key) {
++    @Nullable
++    public <T> T getOrNull(@NotNull String key) {
+         return (T) this.hashMap.get(key);
+     }
+ 
+-    public boolean exist(String key) {
++    public boolean exist(@NotNull String key) {
+         return this.hashMap.containsKey(key);
+     }
+ 
+-    public void set(String key, Object value) {
++    public void set(@NotNull String key, @NotNull Object value) {
+         this.hashMap.put(key, value);
+     }
+ 
+-    public void remove(String key) {
++    public void remove(@NotNull String key) {
+         this.hashMap.remove(key);
+     }
+ 
+-    public void addInt(String key, int value) {
++    public void addInt(@NotNull String key, int value) {
+         this.hashMap.computeIfPresent(key, (k, v) -> (Integer) v + value);
+     }
+ 
