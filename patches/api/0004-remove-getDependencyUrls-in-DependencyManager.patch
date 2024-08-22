@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 09:29:24 +0200
+Subject: [PATCH] remove getDependencyUrls in DependencyManager
+
+
+diff --git a/src/main/java/world/estaria/paper/DependencyManager.java b/src/main/java/world/estaria/paper/DependencyManager.java
+index a8c8dfa7af2a64c0b66b8d49a1d5b5f4ef10a3f0..64980e7f3bc63d95091e489b425187aa766700d1 100644
+--- a/src/main/java/world/estaria/paper/DependencyManager.java
++++ b/src/main/java/world/estaria/paper/DependencyManager.java
+@@ -26,17 +26,6 @@ public class DependencyManager {
+         }
+     }
+ 
+-    @NotNull
+-    public List<URL> getDependencyUrls() {
+-        return getDependencyFiles().stream().map(file -> {
+-            try {
+-                return file.toURI().toURL();
+-            } catch (MalformedURLException e) {
+-                throw new RuntimeException(e);
+-            }
+-        }).toList();
+-    }
+-
+     @NotNull
+     public List<File> getDependencyFiles() {
+         return Arrays.stream(Objects.requireNonNull(this.directory.listFiles()))
