@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 16:23:42 +0200
+Subject: [PATCH] add Player#playsound method without location
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index c8b1de673cd75cbb469e5752ab714f41571e795e..fcfe2e64dae4b53812b4873b2b46db32a8715ba2 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -799,11 +799,29 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.playSound(loc, sound, org.bukkit.SoundCategory.MASTER, volume, pitch);
+     }
+ 
++    // forktest start
++
++    @Override
++    public void playSound(@NotNull Sound sound, float volume, float pitch) {
++        playSound(getLocation(), sound, volume, pitch);
++    }
++
++    // forktest end
++
+     @Override
+     public void playSound(Location loc, String sound, float volume, float pitch) {
+         this.playSound(loc, sound, org.bukkit.SoundCategory.MASTER, volume, pitch);
+     }
+ 
++    // forktest start
++
++    @Override
++    public void playSound(@NotNull String sound, float volume, float pitch) {
++        playSound(getLocation(), sound, volume, pitch);
++    }
++
++    // forktest end
++
+     @Override
+     public void playSound(Location loc, Sound sound, org.bukkit.SoundCategory category, float volume, float pitch) {
+         this.playSound(loc, sound, category, volume, pitch, this.getHandle().random.nextLong());

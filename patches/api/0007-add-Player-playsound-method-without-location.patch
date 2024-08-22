@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 16:23:43 +0200
+Subject: [PATCH] add Player#playsound method without location
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 65c1a3ef8f2f0f28f08f8c775608b09ca8c11b89..c546f01f71631cba47f0172c376eb8aef136ee43 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -655,6 +655,21 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     public void playSound(@NotNull Location location, @NotNull Sound sound, float volume, float pitch);
+ 
++    // forktest start
++
++    /**
++     * Play a sound for a player at the current location.
++     * <p>
++     * This function will fail silently if Location or Sound are null.
++     *
++     * @param sound The sound to play
++     * @param volume The volume of the sound
++     * @param pitch The pitch of the sound
++     */
++    public void playSound( @NotNull Sound sound, float volume, float pitch);
++
++    // forktest end
++
+     /**
+      * Play a sound for a player at the location.
+      * <p>
+@@ -669,6 +684,23 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     public void playSound(@NotNull Location location, @NotNull String sound, float volume, float pitch);
+ 
++    // forktest start
++
++    /**
++     * Play a sound for a player at the current location.
++     * <p>
++     * This function will fail silently if Location or Sound are null. No
++     * sound will be heard by the player if their client does not have the
++     * respective sound for the value passed.
++     *
++     * @param sound The internal sound name to play
++     * @param volume The volume of the sound
++     * @param pitch The pitch of the sound
++     */
++    public void playSound(@NotNull String sound, float volume, float pitch);
++
++    // forktest end
++
+     /**
+      * Play a sound for a player at the location.
+      * <p>
