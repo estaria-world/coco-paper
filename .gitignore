@@ -46,8 +46,8 @@ out/
 # other stuff
 run/
 
-forktest-server
-forktest-api
+coco-paper-server
+coco-paper-api
 paper-api-generator
 
 !gradle/wrapper/gradle-wrapper.jar
