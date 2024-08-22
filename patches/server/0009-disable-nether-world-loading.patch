@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 14:55:03 +0200
+Subject: [PATCH] disable nether world loading
+
+
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+index d6431376184e5650b370cbab204e28bc31f4dac6..01eb4af9ccbeb9fd8f7cedb74c8de75e4cc63210 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+@@ -127,7 +127,7 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         this.rconPort = this.get("rcon.port", 25575);
+         this.rconPassword = this.get("rcon.password", "");
+         this.hardcore = this.get("hardcore", false);
+-        this.allowNether = this.get("allow-nether", true);
++        this.allowNether = this.get("allow-nether", false); // forktest
+         this.spawnMonsters = this.get("spawn-monsters", true);
+         this.useNativeTransport = this.get("use-native-transport", true);
+         this.enableCommandBlock = this.get("enable-command-block", false);
