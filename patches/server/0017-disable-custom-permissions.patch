@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 20:09:10 +0200
+Subject: [PATCH] disable custom permissions
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index f18b09ecaabcbc7936b5a555667c7ba015b28934..b4a0146ce8b72e192d06744d169147e3d97aaea7 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1227,6 +1227,7 @@ public final class CraftServer implements Server {
+ 
+     @SuppressWarnings({ "unchecked", "finally" })
+     private void loadCustomPermissions() {
++        /* CocoPaper start
+         File file = new File(this.configuration.getString("settings.permissions-file"));
+         FileInputStream stream;
+ 
+@@ -1270,6 +1271,7 @@ public final class CraftServer implements Server {
+                 this.getLogger().log(Level.SEVERE, "Permission in " + file + " was already defined", ex);
+             }
+         }
++         */ // CocoPaper end
+     }
+ 
+     @Override
+diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
+index 86ece33f02a994de9f0272d58018ed472fd2a36a..ce35af2aa19c05f18622f199fd9e863ea5f489d0 100644
+--- a/src/main/resources/configurations/bukkit.yml
++++ b/src/main/resources/configurations/bukkit.yml
+@@ -14,7 +14,6 @@
+ settings:
+     allow-end: false
+     warn-on-overload: true
+-    permissions-file: permissions.yml
+     update-folder: update
+     plugin-profiling: false
+     connection-throttle: 4000
