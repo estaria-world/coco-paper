@@ -5,7 +5,7 @@ Subject: [PATCH] add isMoving and getLastMoving in Player
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 5980b70e2d7273239245237189b2debcbccfbac3..21e5687471c135375b0d8b90c4d15f8c3a34c138 100644
+index 6c280abdef5f80b668d6090f9d35283a33e21e0c..64c0cf384f39760975a7a4661e1f8f8f2020e3ee 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -283,6 +283,11 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
@@ -21,10 +21,10 @@ index 5980b70e2d7273239245237189b2debcbccfbac3..21e5687471c135375b0d8b90c4d15f8c
      public CraftPlayer.TransferCookieConnection transferCookieConnection;
      public String displayName;
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 7796e191747be545e744564a2b0b65790f69114d..cd1b9abdf125edb39a083b3b9a8c4c6d8db89661 100644
+index b13057c0792067cc6b0abdf0d64a9be2cc9389a4..e315ca045454bbd10444f0b9ce8554892680a0ba 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -653,6 +653,9 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -662,6 +662,9 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
                      PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
                      this.cserver.getPluginManager().callEvent(event);
  
@@ -34,7 +34,7 @@ index 7796e191747be545e744564a2b0b65790f69114d..cd1b9abdf125edb39a083b3b9a8c4c6d
                      // If the event is cancelled we move the player back to their old location.
                      if (event.isCancelled()) {
                          this.teleport(from);
-@@ -1516,6 +1519,9 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -1560,6 +1563,9 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
                                      PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
                                      this.cserver.getPluginManager().callEvent(event);
  
@@ -45,7 +45,7 @@ index 7796e191747be545e744564a2b0b65790f69114d..cd1b9abdf125edb39a083b3b9a8c4c6d
                                      if (event.isCancelled()) {
                                          this.teleport(from);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 067e20828ec26902d99fe6bc31e31d78a6c44919..c8b1de673cd75cbb469e5752ab714f41571e795e 100644
+index 99dbfa2dd5e1e41d7d06bd86fc9c11bbde3d9558..5c7c00919ad3b0bef0b6ff4cf8319c5b792e9182 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -3096,11 +3096,22 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

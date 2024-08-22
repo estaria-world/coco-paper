@@ -1,0 +1,168 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 18:34:07 +0200
+Subject: [PATCH] rename forktest to CocoPaper
+
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 580678cffb129fd3b0ae2d9b9df9c7920c9105c8..c73982c4914bd4dc4ee129f8b85ef4a86152a002 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -61,7 +61,7 @@ import org.jetbrains.annotations.ApiStatus;
+ import org.jetbrains.annotations.Contract;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+-import world.estaria.paper.DependencyManager; // forktest
++import world.estaria.paper.DependencyManager; // CocoPaper
+ 
+ /**
+  * Represents the Bukkit core, for version and Server singleton handling
+@@ -84,7 +84,7 @@ public final class Bukkit {
+         return server;
+     }
+ 
+-    // forktest start - add dependency manager
++    // CocoPaper start - add dependency manager
+     /**
+      * Returns the global plugin class loader dependency manager
+      * @return dependency manager instance
+@@ -93,7 +93,7 @@ public final class Bukkit {
+     public static DependencyManager getDependencyManager() {
+         return server.getDependencyManager();
+     }
+-    // forktest end
++    // CocoPaper end
+ 
+     /**
+      * Returns the de facto plugins directory, generally used for storing plugin jars to be loaded,
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 93d9c58a239f042fec557a9c0ddcb8770c9500fc..231b7f7a1ddc2e14071208143db0015d78776b3a 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -62,7 +62,7 @@ import org.jetbrains.annotations.ApiStatus;
+ import org.jetbrains.annotations.Contract;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+-import world.estaria.paper.DependencyManager; // forktest
++import world.estaria.paper.DependencyManager; // CocoPaper
+ 
+ /**
+  * Represents a server implementation.
+@@ -105,10 +105,10 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+     @NotNull
+     public String getName();
+ 
+-    // forktest start - add dependency manager
++    // CocoPaper start - add dependency manager
+     @NotNull
+     public DependencyManager getDependencyManager();
+-    // forktest end
++    // CocoPaper end
+ 
+     /**
+      * Gets the version string of this server implementation.
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index c546f01f71631cba47f0172c376eb8aef136ee43..776426d15e8c14c334e65241438afe72f689a8c6 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -53,7 +53,7 @@ import org.bukkit.scoreboard.Scoreboard;
+ import org.jetbrains.annotations.ApiStatus;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+-import world.estaria.paper.player.PlayerData; // forktest
++import world.estaria.paper.player.PlayerData; // CocoPaper
+ 
+ /**
+  * Represents a player, connected or not
+@@ -94,7 +94,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+     void displayName(final net.kyori.adventure.text.@Nullable Component displayName);
+     // Paper end
+ 
+-    // forktest start
++    // CocoPaper start
+     /**
+      * @return a [PlayerData] object which can hold
+      * arbitrary data from different methods.
+@@ -115,7 +115,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+     @NotNull
+     Long getLastMoving();
+ 
+-    // forktest end
++    // CocoPaper end
+ 
+     /**
+      * {@inheritDoc}
+@@ -655,7 +655,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     public void playSound(@NotNull Location location, @NotNull Sound sound, float volume, float pitch);
+ 
+-    // forktest start
++    // CocoPaper start
+ 
+     /**
+      * Play a sound for a player at the current location.
+@@ -668,7 +668,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     public void playSound( @NotNull Sound sound, float volume, float pitch);
+ 
+-    // forktest end
++    // CocoPaper end
+ 
+     /**
+      * Play a sound for a player at the location.
+@@ -684,7 +684,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     public void playSound(@NotNull Location location, @NotNull String sound, float volume, float pitch);
+ 
+-    // forktest start
++    // CocoPaper start
+ 
+     /**
+      * Play a sound for a player at the current location.
+@@ -699,7 +699,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     public void playSound(@NotNull String sound, float volume, float pitch);
+ 
+-    // forktest end
++    // CocoPaper end
+ 
+     /**
+      * Play a sound for a player at the location.
+diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+index d614ff93cf4ffa5f58598d66a2de825f282539a7..5db46f320516fbf94d9e35698c89c769264dcae9 100644
+--- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+@@ -22,14 +22,13 @@ import java.util.jar.JarEntry;
+ import java.util.jar.JarFile;
+ import java.util.jar.Manifest;
+ 
+-import org.bukkit.Bukkit; // forktest
+-import org.bukkit.Server; // forktest
++import org.bukkit.Bukkit; // CocoPaper
+ import org.bukkit.plugin.InvalidPluginException;
+ import org.bukkit.plugin.PluginDescriptionFile;
+ import org.bukkit.plugin.SimplePluginManager;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+-import world.estaria.paper.DependencyManager; // forktest
++import world.estaria.paper.DependencyManager; // CocoPaper
+ 
+ /**
+  * A ClassLoader for plugins, to allow shared classes across multiple plugins
+@@ -62,14 +61,14 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
+         super(file.getName(), new URL[] {file.toURI().toURL()}, parent);
+         this.loader = null; // Paper - pass null into loader field
+ 
+-        // forktest start
++        // CocoPaper start
+         DependencyManager dependencyManager = Bukkit.getDependencyManager();
+         for (File dependencyFile : dependencyManager.getDependencyFiles()) {
+             addURL(dependencyFile.toURI().toURL());
+             dependencyManager.blockedFiles.add(dependencyFile);
+             Bukkit.getLogger().info("Loading " + dependencyFile.getName());
+         }
+-        // forktest end
++        // CocoPaper end
+ 
+         this.description = description;
+         this.dataFolder = dataFolder;

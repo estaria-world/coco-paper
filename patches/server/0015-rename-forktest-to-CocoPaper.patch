@@ -1,0 +1,359 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 18:34:07 +0200
+Subject: [PATCH] rename forktest to CocoPaper
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 2e616a1bb34aebfa3999370ec3e5d7b0d61d6cef..6991980ab648d69751e980263182beb29fbb4473 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -13,7 +13,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
+ val alsoShade: Configuration by configurations.creating
+ 
+ dependencies {
+-    implementation(project(":forktest-api")) // ForkTest - update api reference
++    implementation(project(":coco-paper-api")) // CocoPaper - update api reference
+     // Paper start
+     implementation("org.jline:jline-terminal-jansi:3.21.0")
+     implementation("net.minecrell:terminalconsoleappender:1.3.0")
+@@ -84,14 +84,14 @@ tasks.jar {
+         val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
+         attributes(
+             "Main-Class" to "org.bukkit.craftbukkit.Main",
+-            "Implementation-Title" to "ForkTest", // ForkTest - rename
++            "Implementation-Title" to "CocoPaper", // CocoPaper - rename
+             "Implementation-Version" to implementationVersion,
+             "Implementation-Vendor" to date, // Paper
+-            "Specification-Title" to "ForkTest", // ForkTest - rename
++            "Specification-Title" to "CocoPaper", // CocoPaper - rename
+             "Specification-Version" to project.version,
+-            "Specification-Vendor" to "ForkTest Team", // ForkTest - rename
+-            "Brand-Id" to "forktestmc:forktest", // ForkTest - rename
+-            "Brand-Name" to "ForkTest", // ForkTest - rename
++            "Specification-Vendor" to "Estaria Team", // CocoPaper - rename
++            "Brand-Id" to "estaria:cocopaper", // CocoPaper - rename
++            "Brand-Name" to "CocoPaper", // CocoPaper - rename
+             "Build-Number" to (build ?: ""),
+             "Build-Time" to Instant.now().toString(),
+             "Git-Branch" to gitBranch, // Paper
+@@ -148,7 +148,7 @@ fun TaskContainer.registerRunTask(
+     name: String,
+     block: JavaExec.() -> Unit
+ ): TaskProvider<JavaExec> = register<JavaExec>(name) {
+-    group = "paperweight" // ForkTest
++    group = "paperweight" // CocoPaper
+     mainClass.set("org.bukkit.craftbukkit.Main")
+     standardInput = System.`in`
+     workingDir = rootProject.layout.projectDirectory
+diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
+index 9d87cb3068124367cb2b8b5adad7a889ab5fd76c..de6a39916c48b918de4f2c69a9ed0c3736e072ef 100644
+--- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
++++ b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
+@@ -31,7 +31,7 @@ public record ServerBuildInfoImpl(
+     private static final String ATTRIBUTE_GIT_COMMIT = "Git-Commit";
+ 
+     private static final String BRAND_PAPER_NAME = "Paper";
+-    private static final String BRAND_FORKTEST_NAME = "ForkTest"; // ForkTest - rename
++    private static final String BRAND_COCOPAPER_NAME = "CocoPaper"; // CocoPaper - rename
+ 
+     private static final String BUILD_DEV = "DEV";
+ 
+@@ -45,7 +45,7 @@ public record ServerBuildInfoImpl(
+                 .map(Key::key)
+                 .orElse(BRAND_PAPER_ID),
+             getManifestAttribute(manifest, ATTRIBUTE_BRAND_NAME)
+-                .orElse(BRAND_FORKTEST_NAME), // ForkTest - rename
++                .orElse(BRAND_COCOPAPER_NAME), // CocoPaper - rename
+             SharedConstants.getCurrentVersion().getId(),
+             SharedConstants.getCurrentVersion().getName(),
+             getManifestAttribute(manifest, ATTRIBUTE_BUILD_NUMBER)
+@@ -62,7 +62,7 @@ public record ServerBuildInfoImpl(
+ 
+     @Override
+     public boolean isBrandCompatible(final @NotNull Key brandId) {
+-        return brandId.equals(this.brandId) || brandId.equals(BRAND_PAPER_ID); // ForkTest - rename - forktest supports both paper and forktest plugins.
++        return brandId.equals(this.brandId) || brandId.equals(BRAND_PAPER_ID); // CocoPaper - rename - CocoPaper supports both paper and CocoPaper plugins.
+     }
+ 
+     @Override
+diff --git a/src/main/java/io/papermc/paper/command/subcommands/DumpPluginsCommand.java b/src/main/java/io/papermc/paper/command/subcommands/DumpPluginsCommand.java
+index f9873882a260e69ba8434b9abfe36902ae7499a0..5ca4b684b7fe17c2a2cb1edf2baea2900548ac03 100644
+--- a/src/main/java/io/papermc/paper/command/subcommands/DumpPluginsCommand.java
++++ b/src/main/java/io/papermc/paper/command/subcommands/DumpPluginsCommand.java
+@@ -86,12 +86,12 @@ public final class DumpPluginsCommand implements PaperSubcommand {
+ 
+     private JsonObject writeDebug() {
+         JsonObject root = new JsonObject();
+-        // forktest start
++        // CocoPaper start
+         //if (ConfiguredProviderStorage.LEGACY_PLUGIN_LOADING) {
+         //    root.addProperty("legacy-loading-strategy", true);
+         //}
+         root.addProperty("legacy-loading-strategy", true);
+-        //forktest end
++        // CocoPaper end
+ 
+         this.writeProviders(root);
+         this.writePlugins(root);
+diff --git a/src/main/java/io/papermc/paper/plugin/storage/ConfiguredProviderStorage.java b/src/main/java/io/papermc/paper/plugin/storage/ConfiguredProviderStorage.java
+index 286e0cbba5f7f55deb0b6e405c42b4b068e64541..f2b75ce1120d92d9febc8e27696e39b9eda28855 100644
+--- a/src/main/java/io/papermc/paper/plugin/storage/ConfiguredProviderStorage.java
++++ b/src/main/java/io/papermc/paper/plugin/storage/ConfiguredProviderStorage.java
+@@ -6,18 +6,18 @@ import io.papermc.paper.plugin.entrypoint.strategy.ProviderConfiguration;
+ 
+ public abstract class ConfiguredProviderStorage<T> extends SimpleProviderStorage<T> {
+ 
+-    // forktest start
++    // CocoPaper start
+     // public static final boolean LEGACY_PLUGIN_LOADING = Boolean.getBoolean("paper.useLegacyPluginLoading");
+-    // forktest end
++    // CocoPaper end
+ 
+     protected ConfiguredProviderStorage(ProviderConfiguration<T> onLoad) {
+         // This doesn't work with reloading.
+         // Should we care?
+ 
+-        // forktest start
++        // CocoPaper start
+         //super(LEGACY_PLUGIN_LOADING ? new LegacyPluginLoadingStrategy<>(onLoad) : new ModernPluginLoadingStrategy<>(onLoad));
+         super(new LegacyPluginLoadingStrategy<>(onLoad));
+-        // forktest end
++        // CocoPaper end
+     }
+ 
+ }
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+index 01eb4af9ccbeb9fd8f7cedb74c8de75e4cc63210..f901a4259a99ce1726ab36c937214d71a7b85481 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+@@ -127,7 +127,7 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         this.rconPort = this.get("rcon.port", 25575);
+         this.rconPassword = this.get("rcon.password", "");
+         this.hardcore = this.get("hardcore", false);
+-        this.allowNether = this.get("allow-nether", false); // forktest
++        this.allowNether = this.get("allow-nether", false); // CocoPaper
+         this.spawnMonsters = this.get("spawn-monsters", true);
+         this.useNativeTransport = this.get("use-native-transport", true);
+         this.enableCommandBlock = this.get("enable-command-block", false);
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 64c0cf384f39760975a7a4661e1f8f8f2020e3ee..408ad9e0ac84e5ebd7669773ca6598efb1b90a0f 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -283,10 +283,10 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+     // Paper end - Optional per player mob spawns
+     public final int[] mobBackoffCounts = new int[MOBCATEGORY_TOTAL_ENUMS]; // Paper - per player mob count backoff
+ 
+-    // forktest start
++    // CocoPaper start
+     public Boolean isMoving = false;
+     public Long lastMoving = 0L;
+-    // forktest end
++    // CocoPaper end
+ 
+     // CraftBukkit start
+     public CraftPlayer.TransferCookieConnection transferCookieConnection;
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 4193c2a24d7ee3dc1073e4d47d50d09fcd39881b..31655c05763ae66886b64a42c6471005b21728d0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -35,9 +35,9 @@ import java.util.Map;
+ import java.util.Optional;
+ import java.util.Set;
+ import java.util.UUID;
+-import java.util.concurrent.Executors; // forktest
+-import java.util.concurrent.ScheduledExecutorService; // forktest
+-import java.util.concurrent.TimeUnit; // forktest
++import java.util.concurrent.Executors; // CocoPaper
++import java.util.concurrent.ScheduledExecutorService; // CocoPaper
++import java.util.concurrent.TimeUnit; // CocoPaper
+ import java.util.function.Consumer;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
+@@ -264,7 +264,7 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
+ import org.yaml.snakeyaml.error.MarkedYAMLException;
+ 
+ import net.md_5.bungee.api.chat.BaseComponent; // Spigot
+-import world.estaria.paper.DependencyManager; // forktest
++import world.estaria.paper.DependencyManager; // CocoPaper
+ import world.estaria.paper.event.player.PlayerTickEvent;
+ import world.estaria.paper.event.server.ServerTickEvent;
+ 
+@@ -322,9 +322,9 @@ public final class CraftServer implements Server {
+     private final io.papermc.paper.threadedregions.scheduler.FoliaAsyncScheduler asyncScheduler = new io.papermc.paper.threadedregions.scheduler.FoliaAsyncScheduler();
+     private final io.papermc.paper.threadedregions.scheduler.FoliaGlobalRegionScheduler globalRegionScheduler = new io.papermc.paper.threadedregions.scheduler.FoliaGlobalRegionScheduler();
+ 
+-    // forktest start - add dependency manager
++    // CocoPaper start - add dependency manager
+     private final DependencyManager dependencyManager = new DependencyManager();
+-    // forktest end
++    // CocoPaper end
+ 
+     @Override
+     public final io.papermc.paper.threadedregions.scheduler.RegionScheduler getRegionScheduler() {
+@@ -422,7 +422,7 @@ public final class CraftServer implements Server {
+         this.pluginManager.paperPluginManager = this.paperPluginManager;
+          // Paper end
+ 
+-        // forktest start
++        // CocoPaper start
+         final ScheduledExecutorService schedulerService = Executors.newScheduledThreadPool(1);
+         schedulerService.scheduleAtFixedRate(() -> {
+             new ServerTickEvent().callEvent();
+@@ -431,7 +431,7 @@ public final class CraftServer implements Server {
+                 new PlayerTickEvent(player).callEvent();
+             }
+         }, 0, 1, TimeUnit.MILLISECONDS);
+-        // forktest end
++        // CocoPaper end
+ 
+         CraftRegistry.setMinecraftRegistry(console.registryAccess());
+ 
+@@ -669,12 +669,12 @@ public final class CraftServer implements Server {
+         return this.serverName;
+     }
+ 
+-    // forktest start
++    // CocoPaper start
+     @Override
+     public DependencyManager getDependencyManager() {
+         return this.dependencyManager;
+     }
+-    // forktest end
++    // CocoPaper end
+ 
+     @Override
+     public String getVersion() {
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index de3e979a2c9b9d37a8006856e065f21569625eba..cf57653ad6a3ad300ee6892b2de0c7a93653a363 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -192,7 +192,7 @@ import org.bukkit.scoreboard.Scoreboard;
+ import org.jetbrains.annotations.NotNull;
+ 
+ import net.md_5.bungee.api.chat.BaseComponent; // Spigot
+-import world.estaria.paper.player.PlayerData; // forktest
++import world.estaria.paper.player.PlayerData; // CocoPaper
+ 
+ @DelegateDeserialization(CraftOfflinePlayer.class)
+ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -203,7 +203,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     private final Set<String> channels = new HashSet<String>();
+     private final Map<UUID, Set<WeakReference<Plugin>>> invertedVisibilityEntities = new HashMap<>();
+     private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
+-    private final PlayerData playerData = new PlayerData(); // forktest - add player data
++    private final PlayerData playerData = new PlayerData(); // CocoPaper - add player data
+     private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
+     private int hash = 0;
+     private double health = 20;
+@@ -799,28 +799,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.playSound(loc, sound, org.bukkit.SoundCategory.MASTER, volume, pitch);
+     }
+ 
+-    // forktest start
++    // CocoPaper start
+ 
+     @Override
+     public void playSound(@NotNull Sound sound, float volume, float pitch) {
+         playSound(getLocation(), sound, volume, pitch);
+     }
+ 
+-    // forktest end
++    // CocoPaper end
+ 
+     @Override
+     public void playSound(Location loc, String sound, float volume, float pitch) {
+         this.playSound(loc, sound, org.bukkit.SoundCategory.MASTER, volume, pitch);
+     }
+ 
+-    // forktest start
++    // CocoPaper start
+ 
+     @Override
+     public void playSound(@NotNull String sound, float volume, float pitch) {
+         playSound(getLocation(), sound, volume, pitch);
+     }
+ 
+-    // forktest end
++    // CocoPaper end
+ 
+     @Override
+     public void playSound(Location loc, Sound sound, org.bukkit.SoundCategory category, float volume, float pitch) {
+@@ -3114,7 +3114,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+     // Paper end
+ 
+-    // forktest start
++    // CocoPaper start
+     @Override
+     public @NotNull PlayerData getPlayerData() {
+         return this.playerData;
+@@ -3130,7 +3130,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return getHandle().lastMoving;
+     }
+ 
+-    // forktest end
++    // CocoPaper end
+ 
+     // Paper start
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java b/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java
+index 7508974a2c9610fbfd73977380e46604c2ccfa6a..5b2b2e6a2f73304b0dc475ad2ac951010f925bc1 100644
+--- a/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java
++++ b/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java
+@@ -25,7 +25,7 @@ public class HelpYamlReader {
+     public HelpYamlReader(Server server) {
+         this.server = server;
+ 
+-        // forktest start
++        // CocoPaper start
+         /*
+         File helpYamlFile = new File("help.yml");
+         YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("configurations/help.yml"), Charsets.UTF_8));
+@@ -47,7 +47,7 @@ public class HelpYamlReader {
+             this.helpYaml = defaultConfig;
+         }
+          */
+-        // forktest end
++        // CocoPaper end
+     }
+ 
+     /**
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index 21f39bd0c33ef2635249298e6a247afba8b05742..5dc75ec1953ab0fb936d627bcb5e7ef5ee88347f 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -11,7 +11,7 @@ public final class Versioning {
+     public static String getBukkitVersion() {
+         String result = "Unknown-Version";
+ 
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/com.example.paperfork/forktest-api/pom.properties"); // ForkTest
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/world.estaria.coco.paper/coco-paper-api/pom.properties"); // CocoPaper
+         Properties properties = new Properties();
+ 
+         if (stream != null) {
+diff --git a/src/main/java/org/spigotmc/TicksPerSecondCommand.java b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
+index 671f3d40fd134ceaaf6e5d8dda157de1ab3c2500..f32f25a5c47f9e9a28cb2f938a45d5780e2081ad 100644
+--- a/src/main/java/org/spigotmc/TicksPerSecondCommand.java
++++ b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
+@@ -1,7 +1,7 @@
+ package org.spigotmc;
+ 
+ import net.minecraft.server.MinecraftServer;
+-import org.bukkit.Bukkit; // forktest
++import org.bukkit.Bukkit; // CocoPaper
+ import org.bukkit.ChatColor;
+ import org.bukkit.command.Command;
+ import org.bukkit.command.CommandSender;
+@@ -25,9 +25,9 @@ public class TicksPerSecondCommand extends Command
+             return true;
+         }
+ 
+-        // forktest start
++        // CocoPaper start
+         Bukkit.dispatchCommand(sender, "spark tps");
+-        // forktest end
++        // CocoPaper end
+ 
+         return true;
+     }
