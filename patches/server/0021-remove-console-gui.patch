@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 21:57:20 +0200
+Subject: [PATCH] remove console gui
+
+
+diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
+index 581bd217304e0f9e0b2113c335694805dfb4e2a1..1375f24f8b6266095ece46d13acd1de62eee3a55 100644
+--- a/src/main/java/net/minecraft/server/Main.java
++++ b/src/main/java/net/minecraft/server/Main.java
+@@ -332,12 +332,15 @@ public class Main {
+                 /*
+                 dedicatedserver1.setId((String) optionset.valueOf(optionspec12));
+                 */
++
++                /* CocoPaper start
+                 boolean flag2 = !optionset.has("nogui") && !optionset.nonOptionArguments().contains("nogui");
+ 
+                 if(!Boolean.parseBoolean(System.getenv().getOrDefault("PAPER_DISABLE_SERVER_GUI", String.valueOf(false)))) // Paper - Add environment variable to disable server gui
+                 if (flag2 && !GraphicsEnvironment.isHeadless()) {
+                     dedicatedserver1.showGui();
+                 }
++                 */ // CocoPaper end
+ 
+                 if (optionset.has("port")) {
+                     int port = (Integer) optionset.valueOf("port");
