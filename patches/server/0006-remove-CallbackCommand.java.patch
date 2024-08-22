@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 14:42:20 +0200
+Subject: [PATCH] remove CallbackCommand.java
+
+
+diff --git a/src/main/java/io/papermc/paper/command/CallbackCommand.java b/src/main/java/io/papermc/paper/command/CallbackCommand.java
+deleted file mode 100644
+index fa4202abd13c1c286bd398938103d1103d5443e7..0000000000000000000000000000000000000000
+--- a/src/main/java/io/papermc/paper/command/CallbackCommand.java
++++ /dev/null
+@@ -1,35 +0,0 @@
+-package io.papermc.paper.command;
+-
+-import io.papermc.paper.adventure.providers.ClickCallbackProviderImpl;
+-import org.bukkit.command.Command;
+-import org.bukkit.command.CommandSender;
+-import org.checkerframework.checker.nullness.qual.NonNull;
+-import org.checkerframework.framework.qual.DefaultQualifier;
+-import java.util.UUID;
+-
+-@DefaultQualifier(NonNull.class)
+-public class CallbackCommand extends Command {
+-
+-    protected CallbackCommand(final String name) {
+-        super(name);
+-        this.description = "ClickEvent callback";
+-        this.usageMessage = "/callback <uuid>";
+-    }
+-
+-    @Override
+-    public boolean execute(final CommandSender sender, final String commandLabel, final String[] args) {
+-        if (args.length != 1) {
+-            return false;
+-        }
+-
+-        final UUID id;
+-        try {
+-            id = UUID.fromString(args[0]);
+-        } catch (final IllegalArgumentException ignored) {
+-            return false;
+-        }
+-
+-        ClickCallbackProviderImpl.CALLBACK_MANAGER.runCallback(sender, id);
+-        return true;
+-    }
+-}
+diff --git a/src/main/java/io/papermc/paper/command/PaperCommands.java b/src/main/java/io/papermc/paper/command/PaperCommands.java
+index 7b58b2d6297800c2dcdbf7539e5ab8e7703f39f1..bbb8b1933ef33a3b91f69545f69dd3cfb84b27f5 100644
+--- a/src/main/java/io/papermc/paper/command/PaperCommands.java
++++ b/src/main/java/io/papermc/paper/command/PaperCommands.java
+@@ -17,7 +17,6 @@ public final class PaperCommands {
+     private static final Map<String, Command> COMMANDS = new HashMap<>();
+     static {
+         COMMANDS.put("paper", new PaperCommand("paper"));
+-        COMMANDS.put("callback", new CallbackCommand("callback"));
+         COMMANDS.put("mspt", new MSPTCommand("mspt"));
+     }
+ 
