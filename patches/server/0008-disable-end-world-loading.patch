@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 14:54:46 +0200
+Subject: [PATCH] disable end world loading
+
+
+diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
+index eef7c125b2689f29cae5464659eacdf33f5695b2..86ece33f02a994de9f0272d58018ed472fd2a36a 100644
+--- a/src/main/resources/configurations/bukkit.yml
++++ b/src/main/resources/configurations/bukkit.yml
+@@ -12,7 +12,7 @@
+ 
+ 
+ settings:
+-    allow-end: true
++    allow-end: false
+     warn-on-overload: true
+     permissions-file: permissions.yml
+     update-folder: update
