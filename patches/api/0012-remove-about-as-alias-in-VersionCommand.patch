@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 22:20:46 +0200
+Subject: [PATCH] remove about as alias in VersionCommand
+
+
+diff --git a/src/main/java/org/bukkit/command/defaults/VersionCommand.java b/src/main/java/org/bukkit/command/defaults/VersionCommand.java
+index e64bb57f74e6d6f78927be228825b3e0bdf41f48..4ac0fb4d3037e79c3084a15e6379bff99c42c207 100644
+--- a/src/main/java/org/bukkit/command/defaults/VersionCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/VersionCommand.java
+@@ -50,7 +50,7 @@ public class VersionCommand extends BukkitCommand {
+         this.description = "Gets the version of this server including any plugins in use";
+         this.usageMessage = "/version [plugin name]";
+         this.setPermission("bukkit.command.version");
+-        this.setAliases(Arrays.asList("ver", "about"));
++        this.setAliases(Arrays.asList("ver")); // CocoPaper
+     }
+ 
+     @Override
