@@ -1,0 +1,74 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 10:47:24 +0200
+Subject: [PATCH] add PlayerTickEvent and ServerTickEvent
+
+
+diff --git a/src/main/java/world/estaria/paper/event/player/PlayerTickEvent.java b/src/main/java/world/estaria/paper/event/player/PlayerTickEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..affe7b8ac25b6188d38fcd99485b7901b6d7bb12
+--- /dev/null
++++ b/src/main/java/world/estaria/paper/event/player/PlayerTickEvent.java
+@@ -0,0 +1,27 @@
++package world.estaria.paper.event.player;
++
++import org.bukkit.entity.Player;
++import org.bukkit.event.HandlerList;
++import org.bukkit.event.player.PlayerEvent;
++import org.jetbrains.annotations.NotNull;
++
++public class PlayerTickEvent extends PlayerEvent {
++
++    private static final HandlerList handlers = new HandlerList();
++
++    public PlayerTickEvent(@NotNull final Player player) {
++        super(player, true);
++    }
++
++    @NotNull
++    @Override
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++
++    @NotNull
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++
++}
+diff --git a/src/main/java/world/estaria/paper/event/server/ServerTickEvent.java b/src/main/java/world/estaria/paper/event/server/ServerTickEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e609a898ba3d5e942688d542a4906ef145b8efb6
+--- /dev/null
++++ b/src/main/java/world/estaria/paper/event/server/ServerTickEvent.java
+@@ -0,0 +1,29 @@
++package world.estaria.paper.event.server;
++
++import org.bukkit.event.HandlerList;
++import org.bukkit.event.server.ServerEvent;
++import org.jetbrains.annotations.NotNull;
++
++/**
++ * This event is executed every tick
++ */
++public class ServerTickEvent extends ServerEvent {
++
++    private static final HandlerList handlers = new HandlerList();
++
++    public ServerTickEvent() {
++        super(true);
++    }
++
++    @NotNull
++    @Override
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++
++    @NotNull
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++
++}
