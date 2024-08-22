@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 10:21:51 +0200
+Subject: [PATCH] add isMoving and getLastMoving in Player
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index fefdceb0f16118cf62517f4cacea61eb03bce979..65c1a3ef8f2f0f28f08f8c775608b09ca8c11b89 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -101,6 +101,20 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     @NotNull
+     PlayerData getPlayerData();
++
++    /**
++     * Returns true when this player is starts to moving
++     * @return true or false when player is moving
++     */
++    boolean isMoving();
++
++    /**
++     * Gets the current time millis when the player last moved
++     * @return last system current time millis
++     */
++    @NotNull
++    Long getLastMoving();
++
+     // forktest end
+ 
+     /**

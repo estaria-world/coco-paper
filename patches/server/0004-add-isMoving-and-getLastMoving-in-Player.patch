@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 10:21:48 +0200
+Subject: [PATCH] add isMoving and getLastMoving in Player
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 5980b70e2d7273239245237189b2debcbccfbac3..21e5687471c135375b0d8b90c4d15f8c3a34c138 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -283,6 +283,11 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+     // Paper end - Optional per player mob spawns
+     public final int[] mobBackoffCounts = new int[MOBCATEGORY_TOTAL_ENUMS]; // Paper - per player mob count backoff
+ 
++    // forktest start
++    public Boolean isMoving = false;
++    public Long lastMoving = 0L;
++    // forktest end
++
+     // CraftBukkit start
+     public CraftPlayer.TransferCookieConnection transferCookieConnection;
+     public String displayName;
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 7796e191747be545e744564a2b0b65790f69114d..cd1b9abdf125edb39a083b3b9a8c4c6d8db89661 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -653,6 +653,9 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+                     PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
+                     this.cserver.getPluginManager().callEvent(event);
+ 
++                    this.player.isMoving = (fromX != toX || fromY != toY || fromZ != toZ);
++                    this.player.lastMoving = System.currentTimeMillis();
++
+                     // If the event is cancelled we move the player back to their old location.
+                     if (event.isCancelled()) {
+                         this.teleport(from);
+@@ -1516,6 +1519,9 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+                                     PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
+                                     this.cserver.getPluginManager().callEvent(event);
+ 
++                                    this.player.isMoving = (d0 != toX || d1 != toY || d2 != toZ);
++                                    this.player.lastMoving = System.currentTimeMillis();
++
+                                     // If the event is cancelled we move the player back to their old location.
+                                     if (event.isCancelled()) {
+                                         this.teleport(from);
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 067e20828ec26902d99fe6bc31e31d78a6c44919..c8b1de673cd75cbb469e5752ab714f41571e795e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -3096,11 +3096,22 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+     // Paper end
+ 
+-    // forktes tstart
++    // forktest start
+     @Override
+-    public PlayerData getPlayerData() {
++    public @NotNull PlayerData getPlayerData() {
+         return this.playerData;
+     }
++
++    @Override
++    public boolean isMoving() {
++        return getHandle().isMoving;
++    }
++
++    @Override
++    public @NotNull Long getLastMoving() {
++        return getHandle().lastMoving;
++    }
++
+     // forktest end
+ 
+     // Paper start
