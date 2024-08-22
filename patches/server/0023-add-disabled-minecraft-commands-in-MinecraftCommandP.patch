@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 22:40:20 +0200
+Subject: [PATCH] add disabled minecraft commands in
+ MinecraftCommandPermissionsTest
+
+
+diff --git a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
+index ca71c688b37ce2c8b712a4f9216cf872c8edf78e..281030a4277d59c2d13ef46ddcb0488486d779a7 100644
+--- a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
++++ b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
+@@ -56,9 +56,25 @@ public class MinecraftCommandPermissionsTest extends AbstractTestingBase {
+         assertTrue(perms.isEmpty(), "Extra permissions not associated with a command: \n" + String.join("\n", perms));
+     }
+ 
++    // CocoPaper start
+     private static final List<String> TO_SKIP = List.of(
+-        "minecraft.command.selector"
++        "minecraft.command.selector",
++        "minecraft.command.debug",
++        "minecraft.command.function",
++        "minecraft.command.help",
++        "minecraft.command.msg",
++        "minecraft.command.random",
++        "minecraft.command.say",
++        "minecraft.command.teammsg",
++        "minecraft.command.tellraw",
++        "minecraft.command.ban-ip",
++        "minecraft.command.ban",
++        "minecraft.command.banlist",
++        "minecraft.command.banplayer",
++        "minecraft.command.pardon",
++        "minecraft.command.pardon-ip"
+     );
++    // CocoPaper end
+ 
+     private static Set<String> collectMinecraftCommandPerms() {
+         Set<String> perms = new TreeSet<>();
