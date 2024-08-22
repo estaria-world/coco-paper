@@ -1,0 +1,113 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: niklasnieberler <nikigalaxylp@gmail.com>
+Date: Thu, 22 Aug 2024 14:55:25 +0200
+Subject: [PATCH] remove help.yml
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java b/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java
+index 5923d3c17756c489fcb392044c0679fe52e2d58f..7508974a2c9610fbfd73977380e46604c2ccfa6a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java
++++ b/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java
+@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
+ import java.io.File;
+ import java.io.IOException;
+ import java.io.InputStreamReader;
++import java.util.ArrayList;
+ import java.util.LinkedList;
+ import java.util.List;
+ import java.util.logging.Level;
+@@ -18,13 +19,14 @@ import org.bukkit.help.HelpTopic;
+  */
+ public class HelpYamlReader {
+ 
+-    private YamlConfiguration helpYaml;
+     private final char ALT_COLOR_CODE = '&';
+     private final Server server;
+ 
+     public HelpYamlReader(Server server) {
+         this.server = server;
+ 
++        // forktest start
++        /*
+         File helpYamlFile = new File("help.yml");
+         YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("configurations/help.yml"), Charsets.UTF_8));
+ 
+@@ -44,6 +46,8 @@ public class HelpYamlReader {
+             server.getLogger().severe("Failed to load help.yml. Verify the yaml indentation is correct. Reverting to default help.yml.");
+             this.helpYaml = defaultConfig;
+         }
++         */
++        // forktest end
+     }
+ 
+     /**
+@@ -52,18 +56,7 @@ public class HelpYamlReader {
+      * @return A list of general topics.
+      */
+     public List<HelpTopic> getGeneralTopics() {
+-        List<HelpTopic> topics = new LinkedList<HelpTopic>();
+-        ConfigurationSection generalTopics = this.helpYaml.getConfigurationSection("general-topics");
+-        if (generalTopics != null) {
+-            for (String topicName : generalTopics.getKeys(false)) {
+-                ConfigurationSection section = generalTopics.getConfigurationSection(topicName);
+-                String shortText = ChatColor.translateAlternateColorCodes(this.ALT_COLOR_CODE, section.getString("shortText", ""));
+-                String fullText = ChatColor.translateAlternateColorCodes(this.ALT_COLOR_CODE, section.getString("fullText", ""));
+-                String permission = section.getString("permission", "");
+-                topics.add(new CustomHelpTopic(topicName, shortText, fullText, permission));
+-            }
+-        }
+-        return topics;
++        return new ArrayList<>();
+     }
+ 
+     /**
+@@ -72,19 +65,7 @@ public class HelpYamlReader {
+      * @return A list of index topics.
+      */
+     public List<HelpTopic> getIndexTopics() {
+-        List<HelpTopic> topics = new LinkedList<HelpTopic>();
+-        ConfigurationSection indexTopics = this.helpYaml.getConfigurationSection("index-topics");
+-        if (indexTopics != null) {
+-            for (String topicName : indexTopics.getKeys(false)) {
+-                ConfigurationSection section = indexTopics.getConfigurationSection(topicName);
+-                String shortText = ChatColor.translateAlternateColorCodes(this.ALT_COLOR_CODE, section.getString("shortText", ""));
+-                String preamble = ChatColor.translateAlternateColorCodes(this.ALT_COLOR_CODE, section.getString("preamble", ""));
+-                String permission = ChatColor.translateAlternateColorCodes(this.ALT_COLOR_CODE, section.getString("permission", ""));
+-                List<String> commands = section.getStringList("commands");
+-                topics.add(new CustomIndexHelpTopic(this.server.getHelpMap(), topicName, shortText, permission, commands, preamble));
+-            }
+-        }
+-        return topics;
++        return new ArrayList<>();
+     }
+ 
+     /**
+@@ -93,25 +74,14 @@ public class HelpYamlReader {
+      * @return A list of amendments.
+      */
+     public List<HelpTopicAmendment> getTopicAmendments() {
+-        List<HelpTopicAmendment> amendments = new LinkedList<HelpTopicAmendment>();
+-        ConfigurationSection commandTopics = this.helpYaml.getConfigurationSection("amended-topics");
+-        if (commandTopics != null) {
+-            for (String topicName : commandTopics.getKeys(false)) {
+-                ConfigurationSection section = commandTopics.getConfigurationSection(topicName);
+-                String description = ChatColor.translateAlternateColorCodes(this.ALT_COLOR_CODE, section.getString("shortText", ""));
+-                String usage = ChatColor.translateAlternateColorCodes(this.ALT_COLOR_CODE, section.getString("fullText", ""));
+-                String permission = section.getString("permission", "");
+-                amendments.add(new HelpTopicAmendment(topicName, description, usage, permission));
+-            }
+-        }
+-        return amendments;
++        return new ArrayList<>();
+     }
+ 
+     public List<String> getIgnoredPlugins() {
+-        return this.helpYaml.getStringList("ignore-plugins");
++        return new ArrayList<>();
+     }
+ 
+     public boolean commandTopicsInMasterIndex() {
+-        return this.helpYaml.getBoolean("command-topics-in-master-index", true);
++        return true;
+     }
+ }
