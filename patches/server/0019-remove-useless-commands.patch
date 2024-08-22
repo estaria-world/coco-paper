@@ -1,0 +1,74 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 21:42:17 +0200
+Subject: [PATCH] remove useless commands
+
+
+diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
+index 43570b8341246c10a761e0280fc8a9c80f27217d..e372fe02b2040ffe0bc196bc9aad9f32b8ba7c61 100644
+--- a/src/main/java/net/minecraft/commands/Commands.java
++++ b/src/main/java/net/minecraft/commands/Commands.java
+@@ -174,27 +174,27 @@ public class Commands {
+         FillCommand.register(this.dispatcher, commandRegistryAccess);
+         FillBiomeCommand.register(this.dispatcher, commandRegistryAccess);
+         ForceLoadCommand.register(this.dispatcher);
+-        FunctionCommand.register(this.dispatcher);
++        // FunctionCommand.register(this.dispatcher); CocoPaper
+         GameModeCommand.register(this.dispatcher);
+         GameRuleCommand.register(this.dispatcher);
+         GiveCommand.register(this.dispatcher, commandRegistryAccess);
+-        HelpCommand.register(this.dispatcher);
++        // HelpCommand.register(this.dispatcher); CocoPaper
+         ItemCommands.register(this.dispatcher, commandRegistryAccess);
+         KickCommand.register(this.dispatcher);
+         KillCommand.register(this.dispatcher);
+         ListPlayersCommand.register(this.dispatcher);
+         LocateCommand.register(this.dispatcher, commandRegistryAccess);
+         LootCommand.register(this.dispatcher, commandRegistryAccess);
+-        MsgCommand.register(this.dispatcher);
++        // MsgCommand.register(this.dispatcher); CocoPaper
+         ParticleCommand.register(this.dispatcher, commandRegistryAccess);
+         PlaceCommand.register(this.dispatcher);
+         PlaySoundCommand.register(this.dispatcher);
+-        RandomCommand.register(this.dispatcher);
++        // RandomCommand.register(this.dispatcher); CocoPaper
+         ReloadCommand.register(this.dispatcher);
+         RecipeCommand.register(this.dispatcher);
+         ReturnCommand.register(this.dispatcher);
+         RideCommand.register(this.dispatcher);
+-        SayCommand.register(this.dispatcher);
++        // SayCommand.register(this.dispatcher); CocoPaper
+         ScheduleCommand.register(this.dispatcher);
+         ScoreboardCommand.register(this.dispatcher, commandRegistryAccess);
+         SeedCommand.register(this.dispatcher, environment != Commands.CommandSelection.INTEGRATED);
+@@ -207,9 +207,9 @@ public class Commands {
+         SummonCommand.register(this.dispatcher, commandRegistryAccess);
+         TagCommand.register(this.dispatcher);
+         TeamCommand.register(this.dispatcher, commandRegistryAccess);
+-        TeamMsgCommand.register(this.dispatcher);
++        // TeamMsgCommand.register(this.dispatcher); CocoPaper
+         TeleportCommand.register(this.dispatcher);
+-        TellRawCommand.register(this.dispatcher, commandRegistryAccess);
++        // TellRawCommand.register(this.dispatcher, commandRegistryAccess); CocoPaper
+         TickCommand.register(this.dispatcher);
+         TimeCommand.register(this.dispatcher);
+         TitleCommand.register(this.dispatcher, commandRegistryAccess);
+@@ -234,13 +234,13 @@ public class Commands {
+         }
+ 
+         if (environment.includeDedicated) {
+-            BanIpCommands.register(this.dispatcher);
+-            BanListCommands.register(this.dispatcher);
+-            BanPlayerCommands.register(this.dispatcher);
++            // BanIpCommands.register(this.dispatcher); CocoPaper
++            // BanListCommands.register(this.dispatcher); CocoPaper
++            // BanPlayerCommands.register(this.dispatcher); CocoPaper
+             DeOpCommands.register(this.dispatcher);
+             OpCommand.register(this.dispatcher);
+-            PardonCommand.register(this.dispatcher);
+-            PardonIpCommand.register(this.dispatcher);
++            // PardonCommand.register(this.dispatcher); CocoPaper
++            // PardonIpCommand.register(this.dispatcher); CocoPaper
+             PerfCommand.register(this.dispatcher);
+             SaveAllCommand.register(this.dispatcher);
+             SaveOffCommand.register(this.dispatcher);
