@@ -1,0 +1,504 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 22:18:57 +0200
+Subject: [PATCH] remove command aliases file
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index b4a0146ce8b72e192d06744d169147e3d97aaea7..b76610b67e69a509f8b80d07484de442b1aab74f 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -22,19 +22,7 @@ import java.io.FileNotFoundException;
+ import java.io.IOException;
+ import java.io.InputStreamReader;
+ import java.net.InetAddress;
+-import java.util.ArrayList;
+-import java.util.Collections;
+-import java.util.Date;
+-import java.util.HashSet;
+-import java.util.Iterator;
+-import java.util.LinkedHashMap;
+-import java.util.LinkedHashSet;
+-import java.util.List;
+-import java.util.Locale;
+-import java.util.Map;
+-import java.util.Optional;
+-import java.util.Set;
+-import java.util.UUID;
++import java.util.*;
+ import java.util.concurrent.Executors; // CocoPaper
+ import java.util.concurrent.ScheduledExecutorService; // CocoPaper
+ import java.util.concurrent.TimeUnit; // CocoPaper
+@@ -289,7 +277,7 @@ public final class CraftServer implements Server {
+     private final Map<String, World> worlds = new LinkedHashMap<String, World>();
+     // private final Map<Class<?>, Registry<?>> registries = new HashMap<>(); // Paper - replace with RegistryAccess
+     private YamlConfiguration configuration;
+-    private YamlConfiguration commandsConfiguration;
++    // private YamlConfiguration commandsConfiguration;
+     private final Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
+     private final Map<UUID, OfflinePlayer> offlinePlayers = new MapMaker().weakValues().makeMap();
+     private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
+@@ -420,7 +408,7 @@ public final class CraftServer implements Server {
+         this.pluginManager = new SimplePluginManager(this, commandMap);
+         this.paperPluginManager = new io.papermc.paper.plugin.manager.PaperPluginManagerImpl(this, this.commandMap, pluginManager);
+         this.pluginManager.paperPluginManager = this.paperPluginManager;
+-         // Paper end
++        // Paper end
+ 
+         // CocoPaper start
+         final ScheduledExecutorService schedulerService = Executors.newScheduledThreadPool(1);
+@@ -439,18 +427,14 @@ public final class CraftServer implements Server {
+             this.getLogger().info("Console input is disabled due to --noconsole command argument");
+         }
+ 
++        // CocoPaper start
++
+         this.configuration = YamlConfiguration.loadConfiguration(this.getConfigFile());
+         this.configuration.options().copyDefaults(true);
+         this.configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("configurations/bukkit.yml"), Charsets.UTF_8)));
+-        ConfigurationSection legacyAlias = null;
+-        if (!this.configuration.isString("aliases")) {
+-            legacyAlias = this.configuration.getConfigurationSection("aliases");
+-            this.configuration.set("aliases", "now-in-commands.yml");
+-        }
+         this.saveConfig();
+-        if (this.getCommandsConfigFile().isFile()) {
+-            legacyAlias = null;
+-        }
++
++                /*
+         this.commandsConfiguration = YamlConfiguration.loadConfiguration(this.getCommandsConfigFile());
+         this.commandsConfiguration.options().copyDefaults(true);
+         // Paper start - don't enforce icanhasbukkit default if alias block exists
+@@ -477,10 +461,10 @@ public final class CraftServer implements Server {
+                 aliases.set(key, commands);
+             }
+         }
++         */ // CocoPaper end
+ 
+-        this.saveCommandsConfig();
+-        this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
+-        this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
++        this.overrideAllCommandBlockCommands = false; // CocoPaper
++        this.ignoreVanillaPermissions = false; // CocoPaper
+         //this.pluginManager.useTimings(this.configuration.getBoolean("settings.plugin-profiling")); // Paper - we already moved this
+         this.overrideSpawnLimits();
+         console.autosavePeriod = this.configuration.getInt("ticks-per.autosave");
+@@ -500,7 +484,7 @@ public final class CraftServer implements Server {
+     }
+ 
+     public boolean getCommandBlockOverride(String command) {
+-        return this.overrideAllCommandBlockCommands || this.commandsConfiguration.getStringList("command-block-overrides").contains(command);
++        return this.overrideAllCommandBlockCommands;
+     }
+ 
+     private File getConfigFile() {
+@@ -527,14 +511,6 @@ public final class CraftServer implements Server {
+         }
+     }
+ 
+-    private void saveCommandsConfig() {
+-        try {
+-            this.commandsConfiguration.save(this.getCommandsConfigFile());
+-        } catch (IOException ex) {
+-            Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, "Could not save " + this.getCommandsConfigFile(), ex);
+-        }
+-    }
+-
+     private void loadCompatibilities() {
+         if (true) return; // Paper - Big nope
+         ConfigurationSection compatibilities = this.configuration.getConfigurationSection("settings.compatibility");
+@@ -544,10 +520,10 @@ public final class CraftServer implements Server {
+         }
+ 
+         this.activeCompatibilities = compatibilities
+-                .getKeys(false)
+-                .stream()
+-                .filter(compatibilities::getBoolean)
+-                .collect(Collectors.toSet());
++            .getKeys(false)
++            .stream()
++            .filter(compatibilities::getBoolean)
++            .collect(Collectors.toSet());
+ 
+         if (!this.activeCompatibilities.isEmpty()) {
+             this.logger.info("Using following compatibilities: `" + Joiner.on("`, `").join(this.activeCompatibilities) + "`, this will affect performance and other plugins behavior.");
+@@ -574,8 +550,7 @@ public final class CraftServer implements Server {
+     }
+ 
+     private List<File> extraPluginJars() {
+-        @SuppressWarnings("unchecked")
+-        final List<File> jars = (List<File>) this.console.options.valuesOf("add-plugin");
++        @SuppressWarnings("unchecked") final List<File> jars = (List<File>) this.console.options.valuesOf("add-plugin");
+         final List<File> list = new ArrayList<>();
+         for (final File file : jars) {
+             if (!file.exists()) {
+@@ -600,7 +575,8 @@ public final class CraftServer implements Server {
+         if (type == PluginLoadOrder.STARTUP) {
+             this.helpMap.clear();
+             this.helpMap.initializeGeneralTopics();
+-            if (io.papermc.paper.configuration.GlobalConfiguration.get().misc.loadPermissionsYmlBeforePlugins) loadCustomPermissions(); // Paper
++            if (io.papermc.paper.configuration.GlobalConfiguration.get().misc.loadPermissionsYmlBeforePlugins)
++                loadCustomPermissions(); // Paper
+         }
+ 
+         Plugin[] plugins = this.pluginManager.getPlugins();
+@@ -620,7 +596,8 @@ public final class CraftServer implements Server {
+             this.commandMap.registerServerAliases();
+             DefaultPermissions.registerCorePermissions();
+             CraftDefaultPermissions.registerCorePermissions();
+-            if (!io.papermc.paper.configuration.GlobalConfiguration.get().misc.loadPermissionsYmlBeforePlugins) this.loadCustomPermissions(); // Paper
++            if (!io.papermc.paper.configuration.GlobalConfiguration.get().misc.loadPermissionsYmlBeforePlugins)
++                this.loadCustomPermissions(); // Paper
+             this.helpMap.initializeCommands();
+             this.syncCommands();
+         }
+@@ -653,7 +630,7 @@ public final class CraftServer implements Server {
+                     permsToLoad.add(perm);
+                 } else {
+                     this.getLogger().log(Level.WARNING, "Plugin " + plugin.getDescription().getFullName() + " tried to register permission '" + perm.getName() + "' but it's already registered");
+-                // Paper end
++                    // Paper end
+                 }
+             }
+             this.paperPluginManager.addPermissions(permsToLoad); // Paper
+@@ -1068,7 +1045,6 @@ public final class CraftServer implements Server {
+         org.spigotmc.WatchdogThread.hasStarted = false; // Paper - Disable watchdog early timeout on reload
+         this.reloadCount++;
+         this.configuration = YamlConfiguration.loadConfiguration(this.getConfigFile());
+-        this.commandsConfiguration = YamlConfiguration.loadConfiguration(this.getCommandsConfigFile());
+ 
+         this.console.settings = new DedicatedServerSettings(this.console.options);
+         DedicatedServerProperties config = this.console.settings.getProperties();
+@@ -1130,8 +1106,8 @@ public final class CraftServer implements Server {
+         org.spigotmc.SpigotConfig.registerCommands(); // Spigot
+         io.papermc.paper.command.PaperCommands.registerCommands(this.console); // Paper
+         this.spark.registerCommandBeforePlugins(this); // Paper - spark
+-        this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
+-        this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
++        this.overrideAllCommandBlockCommands = false; // CocoPaper
++        this.ignoreVanillaPermissions = false; // CocoPaper
+ 
+         int pollCount = 0;
+ 
+@@ -1139,7 +1115,8 @@ public final class CraftServer implements Server {
+         while (pollCount < 50 && this.getScheduler().getActiveWorkers().size() > 0) {
+             try {
+                 Thread.sleep(50);
+-            } catch (InterruptedException e) {}
++            } catch (InterruptedException e) {
++            }
+             pollCount++;
+         }
+ 
+@@ -1152,14 +1129,16 @@ public final class CraftServer implements Server {
+                 plugin.getDescription().getFullName(),
+                 "This plugin is not properly shutting down its async tasks when it is being reloaded.  This may cause conflicts with the newly loaded version of the plugin"
+             ));
+-            if (console.isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread(worker.getThread(), "still running"); // Paper - Debugging
++            if (console.isDebugging())
++                io.papermc.paper.util.TraceUtil.dumpTraceForThread(worker.getThread(), "still running"); // Paper - Debugging
+         }
+         io.papermc.paper.plugin.PluginInitializerManager.reload(this.console); // Paper
+         this.loadPlugins();
+         this.enablePlugins(PluginLoadOrder.STARTUP);
+         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+         this.spark.registerCommandAfterPlugins(this); // Paper - spark
+-        if (io.papermc.paper.plugin.PluginInitializerManager.instance().pluginRemapper != null) io.papermc.paper.plugin.PluginInitializerManager.instance().pluginRemapper.pluginsEnabled(); // Paper - Remap plugins
++        if (io.papermc.paper.plugin.PluginInitializerManager.instance().pluginRemapper != null)
++            io.papermc.paper.plugin.PluginInitializerManager.instance().pluginRemapper.pluginsEnabled(); // Paper - Remap plugins
+         // Paper start - brigadier command API
+         io.papermc.paper.command.brigadier.PaperCommands.INSTANCE.setValid(); // to clear invalid state for event fire below
+         io.papermc.paper.plugin.lifecycle.event.LifecycleEventRunner.INSTANCE.callReloadableRegistrarEvent(io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents.COMMANDS, io.papermc.paper.command.brigadier.PaperCommands.INSTANCE, org.bukkit.plugin.Plugin.class, io.papermc.paper.plugin.lifecycle.event.registrar.ReloadableRegistrarEvent.Cause.RELOAD); // call commands event for regular plugins
+@@ -1175,10 +1154,11 @@ public final class CraftServer implements Server {
+         int pollCount = 0;
+ 
+         // Wait for at most 5 seconds for plugins to close their threads
+-        while (pollCount < 10*5 && getScheduler().getActiveWorkers().size() > 0) {
++        while (pollCount < 10 * 5 && getScheduler().getActiveWorkers().size() > 0) {
+             try {
+                 Thread.sleep(100);
+-            } catch (InterruptedException e) {}
++            } catch (InterruptedException e) {
++            }
+             pollCount++;
+         }
+ 
+@@ -1191,7 +1171,8 @@ public final class CraftServer implements Server {
+                 plugin.getPluginMeta().getDisplayName(),
+                 "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
+             ));
+-            if (console.isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread(worker.getThread(), "still running"); // Paper - Debugging
++            if (console.isDebugging())
++                io.papermc.paper.util.TraceUtil.dumpTraceForThread(worker.getThread(), "still running"); // Paper - Debugging
+         }
+     }
+     // Paper end - Wait for Async Tasks during shutdown
+@@ -1225,7 +1206,7 @@ public final class CraftServer implements Server {
+         }
+     }
+ 
+-    @SuppressWarnings({ "unchecked", "finally" })
++    @SuppressWarnings({"unchecked", "finally"})
+     private void loadCustomPermissions() {
+         /* CocoPaper start
+         File file = new File(this.configuration.getString("settings.permissions-file"));
+@@ -1449,7 +1430,7 @@ public final class CraftServer implements Server {
+             worlddata.getGameRules().getRule(GameRules.RULE_SPAWN_CHUNK_RADIUS).set(0, null);
+         }
+         ServerLevel internal = (ServerLevel) new ServerLevel(this.console, this.console.executor, worldSession, worlddata, worldKey, worlddimension, this.getServer().progressListenerFactory.create(worlddata.getGameRules().getInt(GameRules.RULE_SPAWN_CHUNK_RADIUS)),
+-                worlddata.isDebugWorld(), j, creator.environment() == Environment.NORMAL ? list : ImmutableList.of(), true, this.console.overworld().getRandomSequences(), creator.environment(), generator, biomeProvider);
++            worlddata.isDebugWorld(), j, creator.environment() == Environment.NORMAL ? list : ImmutableList.of(), true, this.console.overworld().getRandomSequences(), creator.environment(), generator, biomeProvider);
+ 
+         if (!(this.worlds.containsKey(name.toLowerCase(Locale.ROOT)))) {
+             return null;
+@@ -1834,27 +1815,12 @@ public final class CraftServer implements Server {
+         // Paper end
+     }
+ 
++    // CocoPaper start
+     @Override
+     public Map<String, String[]> getCommandAliases() {
+-        ConfigurationSection section = this.commandsConfiguration.getConfigurationSection("aliases");
+-        Map<String, String[]> result = new LinkedHashMap<String, String[]>();
+-
+-        if (section != null) {
+-            for (String key : section.getKeys(false)) {
+-                List<String> commands;
+-
+-                if (section.isList(key)) {
+-                    commands = section.getStringList(key);
+-                } else {
+-                    commands = ImmutableList.of(section.getString(key));
+-                }
+-
+-                result.put(key, commands.toArray(new String[commands.size()]));
+-            }
+-        }
+-
+-        return result;
++        return new HashMap<>();
+     }
++    // CocoPaper end
+ 
+     public void removeBukkitSpawnRadius() {
+         this.configuration.set("settings.spawn-radius", null);
+@@ -1871,6 +1837,7 @@ public final class CraftServer implements Server {
+         String msg = getShutdownMessage();
+         return msg != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(msg) : null;
+     }
++
+     // Paper end
+     @Override
+     @Deprecated // Paper
+@@ -2045,6 +2012,7 @@ public final class CraftServer implements Server {
+ 
+         return CraftItemStack.asBukkitCopy(stack);
+     }
++
+     // Paper start - copied from above (uses un-deprecated StructureType type)
+     @Override
+     public ItemStack createExplorerMap(World world, Location location, org.bukkit.generator.structure.StructureType structureType, org.bukkit.map.MapCursor.Type mapIcon, int radius, boolean findUnexplored) {
+@@ -2283,13 +2251,13 @@ public final class CraftServer implements Server {
+     @Override
+     public <B extends BanList<E>, E> B getBanList(final io.papermc.paper.ban.BanListType<B> type) {
+         Preconditions.checkArgument(type != null, "BanList.BanType cannot be null");
+-       if (type == io.papermc.paper.ban.BanListType.IP) {
+-           return (B) new CraftIpBanList(this.playerList.getIpBans());
+-       } else if (type == io.papermc.paper.ban.BanListType.PROFILE) {
+-          return (B) new CraftProfileBanList(this.playerList.getBans());
+-       } else {
+-           throw new IllegalArgumentException("Unknown BanListType: " + type);
+-       }
++        if (type == io.papermc.paper.ban.BanListType.IP) {
++            return (B) new CraftIpBanList(this.playerList.getIpBans());
++        } else if (type == io.papermc.paper.ban.BanListType.PROFILE) {
++            return (B) new CraftProfileBanList(this.playerList.getBans());
++        } else {
++            throw new IllegalArgumentException("Unknown BanListType: " + type);
++        }
+     }
+     // Paper end - add BanListType (which has a generic)
+ 
+@@ -2471,6 +2439,7 @@ public final class CraftServer implements Server {
+     public Merchant createMerchant(net.kyori.adventure.text.Component title) {
+         return new org.bukkit.craftbukkit.inventory.CraftMerchantCustom(title == null ? InventoryType.MERCHANT.defaultTitle() : title);
+     }
++
+     // Paper end
+     @Override
+     @Deprecated // Paper
+@@ -2536,6 +2505,7 @@ public final class CraftServer implements Server {
+         Preconditions.checkArgument(CraftSpawnCategory.isValidForLimits(spawnCategory), "SpawnCategory." + spawnCategory + " does not have a spawn limit.");
+         return this.getSpawnLimitUnsafe(spawnCategory);
+     }
++
+     public int getSpawnLimitUnsafe(final SpawnCategory spawnCategory) {
+         // Paper end - Add mobcaps commands
+         return this.spawnCategoryLimit.getOrDefault(spawnCategory, -1);
+@@ -2551,6 +2521,7 @@ public final class CraftServer implements Server {
+     public net.kyori.adventure.text.Component motd() {
+         return this.console.motd();
+     }
++
+     @Override
+     public void motd(final net.kyori.adventure.text.Component motd) {
+         this.console.motd(motd);
+@@ -2598,8 +2569,7 @@ public final class CraftServer implements Server {
+ 
+     public List<String> tabCompleteCommand(Player player, String message, ServerLevel world, Vec3 pos) {
+         // Spigot Start
+-        if ( (org.spigotmc.SpigotConfig.tabComplete < 0 || message.length() <= org.spigotmc.SpigotConfig.tabComplete) && !message.contains( " " ) )
+-        {
++        if ((org.spigotmc.SpigotConfig.tabComplete < 0 || message.length() <= org.spigotmc.SpigotConfig.tabComplete) && !message.contains(" ")) {
+             return ImmutableList.of();
+         }
+         // Spigot End
+@@ -2993,31 +2963,26 @@ public final class CraftServer implements Server {
+     }
+ 
+     // Spigot start
+-    private final org.bukkit.Server.Spigot spigot = new org.bukkit.Server.Spigot()
+-    {
++    private final org.bukkit.Server.Spigot spigot = new org.bukkit.Server.Spigot() {
+ 
+         @Deprecated
+         @Override
+-        public YamlConfiguration getConfig()
+-        {
++        public YamlConfiguration getConfig() {
+             return org.spigotmc.SpigotConfig.config;
+         }
+ 
+         @Override
+-        public YamlConfiguration getBukkitConfig()
+-        {
++        public YamlConfiguration getBukkitConfig() {
+             return configuration;
+         }
+ 
+         @Override
+-        public YamlConfiguration getSpigotConfig()
+-        {
++        public YamlConfiguration getSpigotConfig() {
+             return org.spigotmc.SpigotConfig.config;
+         }
+ 
+         @Override
+-        public YamlConfiguration getPaperConfig()
+-        {
++        public YamlConfiguration getPaperConfig() {
+             return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
+         }
+ 
+@@ -3041,15 +3006,14 @@ public final class CraftServer implements Server {
+         }
+     };
+ 
+-    public org.bukkit.Server.Spigot spigot()
+-    {
++    public org.bukkit.Server.Spigot spigot() {
+         return this.spigot;
+     }
+     // Spigot end
+ 
+     @Override
+     public double[] getTPS() {
+-        return new double[] {
++        return new double[]{
+             net.minecraft.server.MinecraftServer.getServer().tps1.getAverage(),
+             net.minecraft.server.MinecraftServer.getServer().tps5.getAverage(),
+             net.minecraft.server.MinecraftServer.getServer().tps15.getAverage()
+@@ -3059,7 +3023,8 @@ public final class CraftServer implements Server {
+     // Paper start - adventure sounds
+     @Override
+     public void playSound(final net.kyori.adventure.sound.Sound sound) {
+-        if (sound.seed().isEmpty()) org.spigotmc.AsyncCatcher.catchOp("play sound; cannot generate seed with world random"); // Paper
++        if (sound.seed().isEmpty())
++            org.spigotmc.AsyncCatcher.catchOp("play sound; cannot generate seed with world random"); // Paper
+         final long seed = sound.seed().orElseGet(this.console.overworld().getRandom()::nextLong);
+         for (ServerPlayer player : this.playerList.getPlayers()) {
+             player.connection.send(io.papermc.paper.adventure.PaperAdventure.asSoundPacket(sound, player.getX(), player.getY(), player.getZ(), seed, null));
+@@ -3074,7 +3039,8 @@ public final class CraftServer implements Server {
+ 
+     @Override
+     public void playSound(final net.kyori.adventure.sound.Sound sound, final net.kyori.adventure.sound.Sound.Emitter emitter) {
+-        if (sound.seed().isEmpty()) org.spigotmc.AsyncCatcher.catchOp("play sound; cannot generate seed with world random"); // Paper
++        if (sound.seed().isEmpty())
++            org.spigotmc.AsyncCatcher.catchOp("play sound; cannot generate seed with world random"); // Paper
+         final long seed = sound.seed().orElseGet(this.console.overworld().getRandom()::nextLong);
+         if (emitter == net.kyori.adventure.sound.Sound.Emitter.self()) {
+             for (ServerPlayer player : this.playerList.getPlayers()) {
+@@ -3127,7 +3093,9 @@ public final class CraftServer implements Server {
+             return null;
+         }
+     }
++
+     private Iterable<? extends net.kyori.adventure.audience.Audience> adventure$audiences;
++
+     @Override
+     public Iterable<? extends net.kyori.adventure.audience.Audience> audiences() {
+         if (this.adventure$audiences == null) {
+@@ -3139,7 +3107,8 @@ public final class CraftServer implements Server {
+     @Override
+     public void reloadPermissions() {
+         pluginManager.clearPermissions();
+-        if (io.papermc.paper.configuration.GlobalConfiguration.get().misc.loadPermissionsYmlBeforePlugins) loadCustomPermissions();
++        if (io.papermc.paper.configuration.GlobalConfiguration.get().misc.loadPermissionsYmlBeforePlugins)
++            loadCustomPermissions();
+         for (Plugin plugin : pluginManager.getPlugins()) {
+             for (Permission perm : plugin.getDescription().getPermissions()) {
+                 try {
+@@ -3149,29 +3118,23 @@ public final class CraftServer implements Server {
+                 }
+             }
+         }
+-        if (!io.papermc.paper.configuration.GlobalConfiguration.get().misc.loadPermissionsYmlBeforePlugins) loadCustomPermissions();
++        if (!io.papermc.paper.configuration.GlobalConfiguration.get().misc.loadPermissionsYmlBeforePlugins)
++            loadCustomPermissions();
+         DefaultPermissions.registerCorePermissions();
+         CraftDefaultPermissions.registerCorePermissions();
+     }
+ 
++    // CocoPaper start
+     @Override
+     public boolean reloadCommandAliases() {
+         Set<String> removals = getCommandAliases().keySet().stream()
+-                .map(key -> key.toLowerCase(java.util.Locale.ENGLISH))
+-                .collect(java.util.stream.Collectors.toSet());
++            .map(key -> key.toLowerCase(java.util.Locale.ENGLISH))
++            .collect(java.util.stream.Collectors.toSet());
+         getCommandMap().getKnownCommands().keySet().removeIf(removals::contains);
+-        File file = getCommandsConfigFile();
+-        try {
+-            commandsConfiguration.load(file);
+-        } catch (FileNotFoundException ex) {
+-            return false;
+-        } catch (IOException | org.bukkit.configuration.InvalidConfigurationException ex) {
+-            Bukkit.getLogger().log(Level.SEVERE, "Cannot load " + file, ex);
+-            return false;
+-        }
+         commandMap.registerServerAliases();
+         return true;
+     }
++    // CocoPaper end
+ 
+     @Override
+     public boolean suggestPlayerNamesWhenNullTabCompletions() {
+@@ -3233,6 +3196,7 @@ public final class CraftServer implements Server {
+     }
+ 
+     private com.destroystokyo.paper.entity.ai.MobGoals mobGoals = new com.destroystokyo.paper.entity.ai.PaperMobGoals();
++
+     @Override
+     public com.destroystokyo.paper.entity.ai.MobGoals getMobGoals() {
+         return mobGoals;
+diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
+index ce35af2aa19c05f18622f199fd9e863ea5f489d0..25aaf35cb1728f58ddb6e79e94b53f3d4923fb9a 100644
+--- a/src/main/resources/configurations/bukkit.yml
++++ b/src/main/resources/configurations/bukkit.yml
+@@ -41,4 +41,3 @@ ticks-per:
+     axolotl-spawns: 1
+     ambient-spawns: 1
+     autosave: 6000
+-aliases: now-in-commands.yml
