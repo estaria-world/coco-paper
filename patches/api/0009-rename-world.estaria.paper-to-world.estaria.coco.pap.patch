@@ -1,0 +1,118 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 18:36:58 +0200
+Subject: [PATCH] rename world.estaria.paper to world.estaria.coco.paper
+
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index c73982c4914bd4dc4ee129f8b85ef4a86152a002..f7330af1f7ce16f2112de6a9992957d1bfdceff8 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -61,7 +61,7 @@ import org.jetbrains.annotations.ApiStatus;
+ import org.jetbrains.annotations.Contract;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+-import world.estaria.paper.DependencyManager; // CocoPaper
++import world.estaria.coco.paper.DependencyManager; // CocoPaper
+ 
+ /**
+  * Represents the Bukkit core, for version and Server singleton handling
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 231b7f7a1ddc2e14071208143db0015d78776b3a..562ab94a8776463e9d459171f03559e58c144d72 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -62,7 +62,7 @@ import org.jetbrains.annotations.ApiStatus;
+ import org.jetbrains.annotations.Contract;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+-import world.estaria.paper.DependencyManager; // CocoPaper
++import world.estaria.coco.paper.DependencyManager; // CocoPaper
+ 
+ /**
+  * Represents a server implementation.
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 776426d15e8c14c334e65241438afe72f689a8c6..3f317a09605a7f3375a11ed98d31e0ba7916d708 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -48,12 +48,11 @@ import org.bukkit.plugin.Plugin;
+ import org.bukkit.plugin.messaging.PluginMessageRecipient;
+ import org.bukkit.potion.PotionEffect;
+ import org.bukkit.potion.PotionEffectType;
+-import org.bukkit.profile.PlayerProfile;
+ import org.bukkit.scoreboard.Scoreboard;
+ import org.jetbrains.annotations.ApiStatus;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+-import world.estaria.paper.player.PlayerData; // CocoPaper
++import world.estaria.coco.paper.player.PlayerData; // CocoPaper
+ 
+ /**
+  * Represents a player, connected or not
+diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+index 5db46f320516fbf94d9e35698c89c769264dcae9..6ffe3029bd1d31946e4407353138fd7984b63013 100644
+--- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
+@@ -25,10 +25,9 @@ import java.util.jar.Manifest;
+ import org.bukkit.Bukkit; // CocoPaper
+ import org.bukkit.plugin.InvalidPluginException;
+ import org.bukkit.plugin.PluginDescriptionFile;
+-import org.bukkit.plugin.SimplePluginManager;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
+-import world.estaria.paper.DependencyManager; // CocoPaper
++import world.estaria.coco.paper.DependencyManager; // CocoPaper
+ 
+ /**
+  * A ClassLoader for plugins, to allow shared classes across multiple plugins
+diff --git a/src/main/java/world/estaria/paper/DependencyManager.java b/src/main/java/world/estaria/coco/paper/DependencyManager.java
+similarity index 96%
+rename from src/main/java/world/estaria/paper/DependencyManager.java
+rename to src/main/java/world/estaria/coco/paper/DependencyManager.java
+index 64980e7f3bc63d95091e489b425187aa766700d1..b972f0823715c8dcbce7a5bc64f90daea2c984e5 100644
+--- a/src/main/java/world/estaria/paper/DependencyManager.java
++++ b/src/main/java/world/estaria/coco/paper/DependencyManager.java
+@@ -1,4 +1,4 @@
+-package world.estaria.paper;
++package world.estaria.coco.paper;
+ 
+ import org.jetbrains.annotations.NotNull;
+ 
+diff --git a/src/main/java/world/estaria/paper/event/player/PlayerTickEvent.java b/src/main/java/world/estaria/coco/paper/event/player/PlayerTickEvent.java
+similarity index 92%
+rename from src/main/java/world/estaria/paper/event/player/PlayerTickEvent.java
+rename to src/main/java/world/estaria/coco/paper/event/player/PlayerTickEvent.java
+index affe7b8ac25b6188d38fcd99485b7901b6d7bb12..a67d2000655e255e1c98d6dbfa7289597a5b16b8 100644
+--- a/src/main/java/world/estaria/paper/event/player/PlayerTickEvent.java
++++ b/src/main/java/world/estaria/coco/paper/event/player/PlayerTickEvent.java
+@@ -1,4 +1,4 @@
+-package world.estaria.paper.event.player;
++package world.estaria.coco.paper.event.player;
+ 
+ import org.bukkit.entity.Player;
+ import org.bukkit.event.HandlerList;
+diff --git a/src/main/java/world/estaria/paper/event/server/ServerTickEvent.java b/src/main/java/world/estaria/coco/paper/event/server/ServerTickEvent.java
+similarity index 92%
+rename from src/main/java/world/estaria/paper/event/server/ServerTickEvent.java
+rename to src/main/java/world/estaria/coco/paper/event/server/ServerTickEvent.java
+index e609a898ba3d5e942688d542a4906ef145b8efb6..f165df39e3497ff2d932609b9ca32b118420be19 100644
+--- a/src/main/java/world/estaria/paper/event/server/ServerTickEvent.java
++++ b/src/main/java/world/estaria/coco/paper/event/server/ServerTickEvent.java
+@@ -1,4 +1,4 @@
+-package world.estaria.paper.event.server;
++package world.estaria.coco.paper.event.server;
+ 
+ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.server.ServerEvent;
+diff --git a/src/main/java/world/estaria/paper/player/PlayerData.java b/src/main/java/world/estaria/coco/paper/player/PlayerData.java
+similarity index 95%
+rename from src/main/java/world/estaria/paper/player/PlayerData.java
+rename to src/main/java/world/estaria/coco/paper/player/PlayerData.java
+index 5f6541357ca021b5d42583745386f28a21b30b67..d073efc2899c574ffb0c8dfa7a2c1e8a81aed73a 100644
+--- a/src/main/java/world/estaria/paper/player/PlayerData.java
++++ b/src/main/java/world/estaria/coco/paper/player/PlayerData.java
+@@ -1,4 +1,4 @@
+-package world.estaria.paper.player;
++package world.estaria.coco.paper.player;
+ 
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;

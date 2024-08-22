@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Thu, 22 Aug 2024 18:36:58 +0200
+Subject: [PATCH] rename world.estaria.paper to world.estaria.coco.paper
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 31655c05763ae66886b64a42c6471005b21728d0..f18b09ecaabcbc7936b5a555667c7ba015b28934 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -264,9 +264,9 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
+ import org.yaml.snakeyaml.error.MarkedYAMLException;
+ 
+ import net.md_5.bungee.api.chat.BaseComponent; // Spigot
+-import world.estaria.paper.DependencyManager; // CocoPaper
+-import world.estaria.paper.event.player.PlayerTickEvent;
+-import world.estaria.paper.event.server.ServerTickEvent;
++import world.estaria.coco.paper.DependencyManager; // CocoPaper
++import world.estaria.coco.paper.event.player.PlayerTickEvent;
++import world.estaria.coco.paper.event.server.ServerTickEvent;
+ 
+ import javax.annotation.Nullable; // Paper
+ import javax.annotation.Nonnull; // Paper
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index cf57653ad6a3ad300ee6892b2de0c7a93653a363..7c28b817595a63cebd295f63a86c3d266141cb36 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -161,7 +161,6 @@ import org.bukkit.craftbukkit.map.CraftMapView;
+ import org.bukkit.craftbukkit.map.RenderData;
+ import org.bukkit.craftbukkit.potion.CraftPotionEffectType;
+ import org.bukkit.craftbukkit.potion.CraftPotionUtil;
+-import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
+ import org.bukkit.craftbukkit.scoreboard.CraftScoreboard;
+ import org.bukkit.craftbukkit.util.CraftChatMessage;
+ import org.bukkit.craftbukkit.util.CraftLocation;
+@@ -174,7 +173,6 @@ import org.bukkit.event.player.PlayerExpCooldownChangeEvent;
+ import org.bukkit.event.player.PlayerHideEntityEvent;
+ import org.bukkit.event.player.PlayerRegisterChannelEvent;
+ import org.bukkit.event.player.PlayerShowEntityEvent;
+-import org.bukkit.event.player.PlayerSpawnChangeEvent;
+ import org.bukkit.event.player.PlayerTeleportEvent;
+ import org.bukkit.event.player.PlayerUnregisterChannelEvent;
+ import org.bukkit.inventory.EquipmentSlot;
+@@ -187,12 +185,11 @@ import org.bukkit.plugin.Plugin;
+ import org.bukkit.plugin.messaging.StandardMessenger;
+ import org.bukkit.potion.PotionEffect;
+ import org.bukkit.potion.PotionEffectType;
+-import org.bukkit.profile.PlayerProfile;
+ import org.bukkit.scoreboard.Scoreboard;
+ import org.jetbrains.annotations.NotNull;
+ 
+ import net.md_5.bungee.api.chat.BaseComponent; // Spigot
+-import world.estaria.paper.player.PlayerData; // CocoPaper
++import world.estaria.coco.paper.player.PlayerData; // CocoPaper
+ 
+ @DelegateDeserialization(CraftOfflinePlayer.class)
+ public class CraftPlayer extends CraftHumanEntity implements Player {
