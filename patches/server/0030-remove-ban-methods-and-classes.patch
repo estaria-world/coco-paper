@@ -1,0 +1,683 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 21:14:54 +0200
+Subject: [PATCH] remove ban methods and classes
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+index 3ad5d88081cb2a08f125e88f92adb107137800f4..c48227dbde2be055724405935abd466910237120 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+@@ -2,9 +2,6 @@ package org.bukkit.craftbukkit;
+ 
+ import com.mojang.authlib.GameProfile;
+ import java.io.File;
+-import java.time.Duration;
+-import java.time.Instant;
+-import java.util.Date;
+ import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Map;
+@@ -16,24 +13,19 @@ import net.minecraft.nbt.NbtOps;
+ import net.minecraft.server.players.UserWhiteListEntry;
+ import net.minecraft.stats.ServerStatsCounter;
+ import net.minecraft.world.level.storage.PlayerDataStorage;
+-import org.bukkit.BanEntry;
+-import org.bukkit.BanList;
+ import org.bukkit.Bukkit;
+ import org.bukkit.Location;
+ import org.bukkit.Material;
+ import org.bukkit.OfflinePlayer;
+ import org.bukkit.Server;
+ import org.bukkit.Statistic;
+-import org.bukkit.ban.ProfileBanList;
+ import org.bukkit.configuration.serialization.ConfigurationSerializable;
+ import org.bukkit.configuration.serialization.SerializableAs;
+ import org.bukkit.craftbukkit.entity.memory.CraftMemoryMapper;
+-import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
+ import org.bukkit.entity.EntityType;
+ import org.bukkit.entity.Player;
+ import org.bukkit.metadata.MetadataValue;
+ import org.bukkit.plugin.Plugin;
+-import org.bukkit.profile.PlayerProfile;
+ 
+ @SerializableAs("Player")
+ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializable {
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index f7394a30ee4e4404c1f5b6c205c1fedb6023e48c..3adc16a8d898f6dae2ebd80f77541d1c4d21c058 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -17,11 +17,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+ import java.awt.image.BufferedImage;
+ import java.io.ByteArrayOutputStream;
+ import java.io.File;
+-import java.io.FileInputStream;
+-import java.io.FileNotFoundException;
+ import java.io.IOException;
+ import java.io.InputStreamReader;
+-import java.net.InetAddress;
+ import java.util.*;
+ import java.util.concurrent.Executors; // CocoPaper
+ import java.util.concurrent.ScheduledExecutorService; // CocoPaper
+@@ -58,10 +55,8 @@ import net.minecraft.server.dedicated.DedicatedServerSettings;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.server.level.TicketType;
+-import net.minecraft.server.players.IpBanListEntry;
+ import net.minecraft.server.players.PlayerList;
+ import net.minecraft.server.players.ServerOpListEntry;
+-import net.minecraft.server.players.UserBanListEntry;
+ import net.minecraft.server.players.UserWhiteListEntry;
+ import net.minecraft.tags.TagKey;
+ import net.minecraft.util.GsonHelper;
+@@ -102,7 +97,6 @@ import net.minecraft.world.level.storage.PlayerDataStorage;
+ import net.minecraft.world.level.storage.PrimaryLevelData;
+ import net.minecraft.world.level.validation.ContentValidationException;
+ import net.minecraft.world.phys.Vec3;
+-import org.bukkit.BanList;
+ import org.bukkit.Bukkit;
+ import org.bukkit.ChatColor;
+ import org.bukkit.GameMode;
+@@ -138,8 +132,6 @@ import org.bukkit.configuration.ConfigurationSection;
+ import org.bukkit.configuration.file.YamlConfiguration;
+ import org.bukkit.configuration.serialization.ConfigurationSerialization;
+ import org.bukkit.conversations.Conversable;
+-import org.bukkit.craftbukkit.ban.CraftIpBanList;
+-import org.bukkit.craftbukkit.ban.CraftProfileBanList;
+ import org.bukkit.craftbukkit.block.data.CraftBlockData;
+ import org.bukkit.craftbukkit.boss.CraftBossBar;
+ import org.bukkit.craftbukkit.boss.CraftKeyedBossbar;
+@@ -249,7 +241,6 @@ import org.bukkit.util.permissions.DefaultPermissions;
+ import org.yaml.snakeyaml.LoaderOptions;
+ import org.yaml.snakeyaml.Yaml;
+ import org.yaml.snakeyaml.constructor.SafeConstructor;
+-import org.yaml.snakeyaml.error.MarkedYAMLException;
+ 
+ import net.md_5.bungee.api.chat.BaseComponent; // Spigot
+ import world.estaria.coco.paper.DependencyManager; // CocoPaper
+diff --git a/src/main/java/org/bukkit/craftbukkit/ban/CraftIpBanEntry.java b/src/main/java/org/bukkit/craftbukkit/ban/CraftIpBanEntry.java
+deleted file mode 100644
+index 847da7f813d2a45c194befa6029754383215dbf1..0000000000000000000000000000000000000000
+--- a/src/main/java/org/bukkit/craftbukkit/ban/CraftIpBanEntry.java
++++ /dev/null
+@@ -1,93 +0,0 @@
+-package org.bukkit.craftbukkit.ban;
+-
+-import com.google.common.net.InetAddresses;
+-import java.net.InetAddress;
+-import java.time.Instant;
+-import java.util.Date;
+-import net.minecraft.server.players.IpBanList;
+-import net.minecraft.server.players.IpBanListEntry;
+-import org.bukkit.BanEntry;
+-
+-public final class CraftIpBanEntry implements BanEntry<InetAddress> {
+-    private static final Date minorDate = Date.from(Instant.parse("1899-12-31T04:00:00Z"));
+-    private final IpBanList list;
+-    private final String target;
+-    private Date created;
+-    private String source;
+-    private Date expiration;
+-    private String reason;
+-
+-    public CraftIpBanEntry(String target, IpBanListEntry entry, IpBanList list) {
+-        this.list = list;
+-        this.target = target;
+-        this.created = entry.getCreated() != null ? new Date(entry.getCreated().getTime()) : null;
+-        this.source = entry.getSource();
+-        this.expiration = entry.getExpires() != null ? new Date(entry.getExpires().getTime()) : null;
+-        this.reason = entry.getReason();
+-    }
+-
+-    @Override
+-    public String getTarget() {
+-        return this.target;
+-    }
+-
+-    @Override
+-    public InetAddress getBanTarget() {
+-        return InetAddresses.forString(this.target);
+-    }
+-
+-    @Override
+-    public Date getCreated() {
+-        return this.created == null ? null : (Date) this.created.clone();
+-    }
+-
+-    @Override
+-    public void setCreated(Date created) {
+-        this.created = created;
+-    }
+-
+-    @Override
+-    public String getSource() {
+-        return this.source;
+-    }
+-
+-    @Override
+-    public void setSource(String source) {
+-        this.source = source;
+-    }
+-
+-    @Override
+-    public Date getExpiration() {
+-        return this.expiration == null ? null : (Date) this.expiration.clone();
+-    }
+-
+-    @Override
+-    public void setExpiration(Date expiration) {
+-        if (expiration != null && expiration.getTime() == CraftIpBanEntry.minorDate.getTime()) {
+-            expiration = null; // Forces "forever"
+-        }
+-
+-        this.expiration = expiration;
+-    }
+-
+-    @Override
+-    public String getReason() {
+-        return this.reason;
+-    }
+-
+-    @Override
+-    public void setReason(String reason) {
+-        this.reason = reason;
+-    }
+-
+-    @Override
+-    public void save() {
+-        IpBanListEntry entry = new IpBanListEntry(this.target, this.created, this.source, this.expiration, this.reason);
+-        this.list.add(entry);
+-    }
+-
+-    @Override
+-    public void remove() {
+-        this.list.remove(this.target);
+-    }
+-}
+diff --git a/src/main/java/org/bukkit/craftbukkit/ban/CraftIpBanList.java b/src/main/java/org/bukkit/craftbukkit/ban/CraftIpBanList.java
+deleted file mode 100644
+index 94be0e848dce0b16ce5e9595a898e61c7bbb442a..0000000000000000000000000000000000000000
+--- a/src/main/java/org/bukkit/craftbukkit/ban/CraftIpBanList.java
++++ /dev/null
+@@ -1,121 +0,0 @@
+-package org.bukkit.craftbukkit.ban;
+-
+-import com.google.common.base.Preconditions;
+-import com.google.common.collect.ImmutableSet;
+-import com.google.common.net.InetAddresses;
+-import java.net.InetAddress;
+-import java.time.Duration;
+-import java.time.Instant;
+-import java.util.Date;
+-import java.util.Set;
+-import net.minecraft.server.players.IpBanList;
+-import net.minecraft.server.players.IpBanListEntry;
+-import org.bukkit.BanEntry;
+-
+-public class CraftIpBanList implements org.bukkit.ban.IpBanList {
+-    private final IpBanList list;
+-
+-    public CraftIpBanList(IpBanList list) {
+-        this.list = list;
+-    }
+-
+-    @Override
+-    public BanEntry<InetAddress> getBanEntry(String target) {
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-
+-        IpBanListEntry entry = this.list.get(target);
+-        if (entry == null) {
+-            return null;
+-        }
+-
+-        return new CraftIpBanEntry(target, entry, this.list);
+-    }
+-
+-    @Override
+-    public BanEntry<InetAddress> getBanEntry(InetAddress target) {
+-        return this.getBanEntry(this.getIpFromAddress(target));
+-    }
+-
+-    @Override
+-    public BanEntry<InetAddress> addBan(String target, String reason, Date expires, String source) {
+-        Preconditions.checkArgument(target != null, "Ban target cannot be null");
+-
+-        IpBanListEntry entry = new IpBanListEntry(target, new Date(),
+-                (source == null || source.isBlank()) ? null : source, expires,
+-                (reason == null || reason.isBlank()) ? null : reason);
+-
+-        this.list.add(entry);
+-
+-        return new CraftIpBanEntry(target, entry, this.list);
+-    }
+-
+-    @Override
+-    public BanEntry<InetAddress> addBan(InetAddress target, String reason, Date expires, String source) {
+-        return this.addBan(this.getIpFromAddress(target), reason, expires, source);
+-    }
+-
+-    @Override
+-    public BanEntry<InetAddress> addBan(InetAddress target, String reason, Instant expires, String source) {
+-        Date date = expires != null ? Date.from(expires) : null;
+-        return this.addBan(target, reason, date, source);
+-    }
+-
+-    @Override
+-    public BanEntry<InetAddress> addBan(InetAddress target, String reason, Duration duration, String source) {
+-        Instant instant = duration != null ? Instant.now().plus(duration) : null;
+-        return this.addBan(target, reason, instant, source);
+-    }
+-
+-    @Override
+-    public Set<BanEntry> getBanEntries() {
+-        ImmutableSet.Builder<BanEntry> builder = ImmutableSet.builder();
+-        for (String target : this.list.getUserList()) {
+-            IpBanListEntry ipBanEntry = this.list.get(target);
+-            if (ipBanEntry != null) {
+-                builder.add(new CraftIpBanEntry(target, ipBanEntry, this.list));
+-            }
+-        }
+-        return builder.build();
+-    }
+-
+-    @Override
+-    public Set<BanEntry<InetAddress>> getEntries() {
+-        ImmutableSet.Builder<BanEntry<InetAddress>> builder = ImmutableSet.builder();
+-        for (String target : this.list.getUserList()) {
+-            IpBanListEntry ipBanEntry = this.list.get(target);
+-            if (ipBanEntry != null) {
+-                builder.add(new CraftIpBanEntry(target, ipBanEntry, this.list));
+-            }
+-        }
+-        return builder.build();
+-    }
+-
+-    @Override
+-    public boolean isBanned(String target) {
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-        return this.list.isBanned(target);
+-    }
+-
+-    @Override
+-    public boolean isBanned(InetAddress target) {
+-        return this.isBanned(this.getIpFromAddress(target));
+-    }
+-
+-    @Override
+-    public void pardon(String target) {
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-        this.list.remove(target);
+-    }
+-
+-    @Override
+-    public void pardon(InetAddress target) {
+-        this.pardon(this.getIpFromAddress(target));
+-    }
+-
+-    private String getIpFromAddress(InetAddress address) {
+-        if (address == null) {
+-            return null;
+-        }
+-        return InetAddresses.toAddrString(address);
+-    }
+-}
+diff --git a/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanEntry.java b/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanEntry.java
+deleted file mode 100644
+index 4a37c8172b42b10472bb90c9310c7ae3eeaa3481..0000000000000000000000000000000000000000
+--- a/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanEntry.java
++++ /dev/null
+@@ -1,94 +0,0 @@
+-package org.bukkit.craftbukkit.ban;
+-
+-import com.mojang.authlib.GameProfile;
+-import java.time.Instant;
+-import java.util.Date;
+-import net.minecraft.server.players.UserBanList;
+-import net.minecraft.server.players.UserBanListEntry;
+-import org.bukkit.BanEntry;
+-import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
+-import org.bukkit.profile.PlayerProfile;
+-
+-public final class CraftProfileBanEntry implements BanEntry<com.destroystokyo.paper.profile.PlayerProfile> { // Paper
+-    private static final Date minorDate = Date.from(Instant.parse("1899-12-31T04:00:00Z"));
+-    private final UserBanList list;
+-    private final GameProfile profile;
+-    private Date created;
+-    private String source;
+-    private Date expiration;
+-    private String reason;
+-
+-    public CraftProfileBanEntry(GameProfile profile, UserBanListEntry entry, UserBanList list) {
+-        this.list = list;
+-        this.profile = profile;
+-        this.created = entry.getCreated() != null ? new Date(entry.getCreated().getTime()) : null;
+-        this.source = entry.getSource();
+-        this.expiration = entry.getExpires() != null ? new Date(entry.getExpires().getTime()) : null;
+-        this.reason = entry.getReason();
+-    }
+-
+-    @Override
+-    public String getTarget() {
+-        return this.profile.getName();
+-    }
+-
+-    @Override
+-    public com.destroystokyo.paper.profile.PlayerProfile getBanTarget() { // Paper
+-        return new com.destroystokyo.paper.profile.CraftPlayerProfile(this.profile); // Paper
+-    }
+-
+-    @Override
+-    public Date getCreated() {
+-        return this.created == null ? null : (Date) this.created.clone();
+-    }
+-
+-    @Override
+-    public void setCreated(Date created) {
+-        this.created = created;
+-    }
+-
+-    @Override
+-    public String getSource() {
+-        return this.source;
+-    }
+-
+-    @Override
+-    public void setSource(String source) {
+-        this.source = source;
+-    }
+-
+-    @Override
+-    public Date getExpiration() {
+-        return this.expiration == null ? null : (Date) this.expiration.clone();
+-    }
+-
+-    @Override
+-    public void setExpiration(Date expiration) {
+-        if (expiration != null && expiration.getTime() == CraftProfileBanEntry.minorDate.getTime()) {
+-            expiration = null; // Forces "forever"
+-        }
+-
+-        this.expiration = expiration;
+-    }
+-
+-    @Override
+-    public String getReason() {
+-        return this.reason;
+-    }
+-
+-    @Override
+-    public void setReason(String reason) {
+-        this.reason = reason;
+-    }
+-
+-    @Override
+-    public void save() {
+-        UserBanListEntry entry = new UserBanListEntry(this.profile, this.created, this.source, this.expiration, this.reason);
+-        this.list.add(entry);
+-    }
+-
+-    @Override
+-    public void remove() {
+-        this.list.remove(this.profile);
+-    }
+-}
+diff --git a/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanList.java b/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanList.java
+deleted file mode 100644
+index 50ee7656580d386db473c054f5c5ec57bb2b1424..0000000000000000000000000000000000000000
+--- a/src/main/java/org/bukkit/craftbukkit/ban/CraftProfileBanList.java
++++ /dev/null
+@@ -1,218 +0,0 @@
+-package org.bukkit.craftbukkit.ban;
+-
+-import com.google.common.base.Preconditions;
+-import com.google.common.collect.ImmutableSet;
+-import com.mojang.authlib.GameProfile;
+-import java.time.Duration;
+-import java.time.Instant;
+-import java.util.Date;
+-import java.util.Set;
+-import java.util.UUID;
+-import net.minecraft.server.MinecraftServer;
+-import net.minecraft.server.players.UserBanList;
+-import net.minecraft.server.players.UserBanListEntry;
+-import org.bukkit.BanEntry;
+-import org.bukkit.ban.ProfileBanList;
+-import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
+-import org.bukkit.profile.PlayerProfile;
+-
+-public class CraftProfileBanList implements ProfileBanList {
+-    private final UserBanList list;
+-
+-    public CraftProfileBanList(UserBanList list) {
+-        this.list = list;
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(String target) { // Paper
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-
+-        return this.getBanEntry(CraftProfileBanList.getProfile(target));
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(PlayerProfile target) { // Paper
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-
+-        return this.getBanEntry(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile()); // Paper
+-    }
+-    // Paper start - fix ban list API
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(final com.destroystokyo.paper.profile.PlayerProfile target) {
+-        Preconditions.checkArgument(target != null, "target cannot be null");
+-
+-        return this.getBanEntry(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile());
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(final com.destroystokyo.paper.profile.PlayerProfile target, final String reason, final Date expires, final String source) {
+-        Preconditions.checkArgument(target != null, "PlayerProfile cannot be null");
+-        Preconditions.checkArgument(target.getId() != null, "The PlayerProfile UUID cannot be null");
+-
+-        return this.addBan(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile(), reason, expires, source);
+-    }
+-
+-    @Override
+-    public boolean isBanned(final com.destroystokyo.paper.profile.PlayerProfile target) {
+-        return this.isBanned((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
+-    }
+-
+-    @Override
+-    public void pardon(final com.destroystokyo.paper.profile.PlayerProfile target) {
+-        this.pardon((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(final com.destroystokyo.paper.profile.PlayerProfile target, final String reason, final Instant expires, final String source) {
+-        Date date = expires != null ? Date.from(expires) : null;
+-        return this.addBan(target, reason, date, source);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(final com.destroystokyo.paper.profile.PlayerProfile target, final String reason, final Duration duration, final String source) {
+-        Instant instant = duration != null ? Instant.now().plus(duration) : null;
+-        return this.addBan(target, reason, instant, source);
+-    }
+-    // Paper end - fix ban list API
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(String target, String reason, Date expires, String source) { // Paper - fix ban list API
+-        Preconditions.checkArgument(target != null, "Ban target cannot be null");
+-
+-        return this.addBan(CraftProfileBanList.getProfileByName(target), reason, expires, source);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(PlayerProfile target, String reason, Date expires, String source) { // Paper - fix ban list API
+-        Preconditions.checkArgument(target != null, "PlayerProfile cannot be null");
+-        Preconditions.checkArgument(target.getUniqueId() != null, "The PlayerProfile UUID cannot be null");
+-
+-        return this.addBan(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile(), reason, expires, source); // Paper
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(PlayerProfile target, String reason, Instant expires, String source) { // Paper - fix ban list API
+-        Date date = expires != null ? Date.from(expires) : null;
+-        return this.addBan(target, reason, date, source);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(PlayerProfile target, String reason, Duration duration, String source) { // Paper - fix ban list API
+-        Instant instant = duration != null ? Instant.now().plus(duration) : null;
+-        return this.addBan(target, reason, instant, source);
+-    }
+-
+-    @Override
+-    public Set<BanEntry> getBanEntries() {
+-        ImmutableSet.Builder<BanEntry> builder = ImmutableSet.builder();
+-        for (UserBanListEntry entry : this.list.getEntries()) {
+-            GameProfile profile = entry.getUser();
+-            builder.add(new CraftProfileBanEntry(profile, entry, this.list));
+-        }
+-
+-        return builder.build();
+-    }
+-
+-    @Override
+-    public Set<BanEntry<com.destroystokyo.paper.profile.PlayerProfile>> getEntries() { // Paper
+-        ImmutableSet.Builder<BanEntry<com.destroystokyo.paper.profile.PlayerProfile>> builder = ImmutableSet.builder(); // Paper
+-        for (UserBanListEntry entry : this.list.getEntries()) {
+-            GameProfile profile = entry.getUser();
+-            builder.add(new CraftProfileBanEntry(profile, entry, this.list));
+-        }
+-
+-        return builder.build();
+-    }
+-
+-    @Override
+-    public boolean isBanned(PlayerProfile target) {
+-        // Paper start
+-        return this.isBanned((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
+-    }
+-    private boolean isBanned(com.destroystokyo.paper.profile.SharedPlayerProfile target) {
+-        // Paper end
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-
+-        return this.isBanned(target.buildGameProfile()); // Paper
+-    }
+-
+-    @Override
+-    public boolean isBanned(String target) {
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-
+-        return this.isBanned(CraftProfileBanList.getProfile(target));
+-    }
+-
+-    @Override
+-    public void pardon(PlayerProfile target) {
+-        // Paper start
+-        this.pardon((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
+-    }
+-    private void pardon(com.destroystokyo.paper.profile.SharedPlayerProfile target) {
+-        // Paper end
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-
+-        this.pardon(target.buildGameProfile()); // Paper
+-    }
+-
+-    @Override
+-    public void pardon(String target) {
+-        Preconditions.checkArgument(target != null, "Target cannot be null");
+-
+-        this.pardon(CraftProfileBanList.getProfile(target));
+-    }
+-
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(GameProfile profile) { // Paper
+-        if (profile == null) {
+-            return null;
+-        }
+-
+-        UserBanListEntry entry = this.list.get(profile);
+-        if (entry == null) {
+-            return null;
+-        }
+-
+-        return new CraftProfileBanEntry(profile, entry, this.list);
+-    }
+-
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(GameProfile profile, String reason, Date expires, String source) { // Paper
+-        if (profile == null) {
+-            return null;
+-        }
+-
+-        UserBanListEntry entry = new UserBanListEntry(profile, new Date(),
+-                (source == null || source.isBlank()) ? null : source, expires,
+-                (reason == null || reason.isBlank()) ? null : reason);
+-
+-        this.list.add(entry);
+-
+-        return new CraftProfileBanEntry(profile, entry, this.list);
+-    }
+-
+-    private void pardon(GameProfile profile) {
+-        this.list.remove(profile);
+-    }
+-
+-    private boolean isBanned(GameProfile profile) {
+-        return profile != null && this.list.isBanned(profile);
+-    }
+-
+-    static GameProfile getProfile(String target) {
+-        UUID uuid = null;
+-
+-        try {
+-            uuid = UUID.fromString(target);
+-        } catch (IllegalArgumentException ignored) {
+-        }
+-
+-        return (uuid != null) ? CraftProfileBanList.getProfileByUUID(uuid) : CraftProfileBanList.getProfileByName(target);
+-    }
+-
+-    static GameProfile getProfileByUUID(UUID uuid) {
+-        return (MinecraftServer.getServer() != null) ? MinecraftServer.getServer().getProfileCache().get(uuid).orElse(null) : null;
+-    }
+-
+-    static GameProfile getProfileByName(String name) {
+-        return (MinecraftServer.getServer() != null) ? MinecraftServer.getServer().getProfileCache().get(name).orElse(null) : null;
+-    }
+-}
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index c14651d804082ec4cb987d25273b3a5a33e0c3d3..9ed7e9a96411df66fffb2524dfae9c67e16dadc9 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1,6 +1,5 @@
+ package org.bukkit.craftbukkit.entity;
+ 
+-import com.destroystokyo.paper.profile.PlayerProfile;
+ import com.google.common.base.Preconditions;
+ import com.google.common.collect.ImmutableSet;
+ import com.google.common.io.BaseEncoding;
+@@ -12,15 +11,12 @@ import it.unimi.dsi.fastutil.shorts.ShortSet;
+ import java.io.ByteArrayOutputStream;
+ import java.io.IOException;
+ import java.lang.ref.WeakReference;
+-import java.net.InetAddress;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.nio.charset.StandardCharsets;
+ import java.time.Duration;
+-import java.time.Instant;
+ import java.util.ArrayList;
+ import java.util.Collection;
+-import java.util.Date;
+ import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.LinkedHashMap;
+@@ -108,8 +104,6 @@ import net.minecraft.world.level.border.BorderChangeListener;
+ import net.minecraft.world.level.saveddata.maps.MapDecoration;
+ import net.minecraft.world.level.saveddata.maps.MapId;
+ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+-import org.bukkit.BanEntry;
+-import org.bukkit.BanList;
+ import org.bukkit.Bukkit;
+ import org.bukkit.DyeColor;
+ import org.bukkit.Effect;

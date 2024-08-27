@@ -1,0 +1,545 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 21:14:55 +0200
+Subject: [PATCH] remove ban methods and classes
+
+
+diff --git a/src/main/java/io/papermc/paper/ban/BanListType.java b/src/main/java/io/papermc/paper/ban/BanListType.java
+deleted file mode 100644
+index 2980abf2f41cb14f0ee5c829c365f8e304130618..0000000000000000000000000000000000000000
+--- a/src/main/java/io/papermc/paper/ban/BanListType.java
++++ /dev/null
+@@ -1,29 +0,0 @@
+-package io.papermc.paper.ban;
+-
+-import org.bukkit.BanList;
+-import org.bukkit.ban.IpBanList;
+-import org.bukkit.ban.ProfileBanList;
+-import org.jetbrains.annotations.NotNull;
+-
+-/**
+- * Represents a ban-type that a {@link BanList} may track.
+- * It enforces the correct return value at compile time.
+- */
+-public interface BanListType<T> {
+-
+-    /**
+-     * Banned IP addresses
+-     */
+-    BanListType<IpBanList> IP = new BanListTypeImpl<>(IpBanList.class);
+-    /**
+-     * Banned player profiles
+-     */
+-    BanListType<ProfileBanList> PROFILE = new BanListTypeImpl<>(ProfileBanList.class);
+-
+-    /**
+-     * Returns the type class of the ban list used generically
+-     *
+-     * @return the type class
+-     */
+-    @NotNull Class<T> typeClass();
+-}
+diff --git a/src/main/java/io/papermc/paper/ban/BanListTypeImpl.java b/src/main/java/io/papermc/paper/ban/BanListTypeImpl.java
+deleted file mode 100644
+index 1159e7cd29fbf11f3fa1448fcf9d0768e1bcb0a3..0000000000000000000000000000000000000000
+--- a/src/main/java/io/papermc/paper/ban/BanListTypeImpl.java
++++ /dev/null
+@@ -1,8 +0,0 @@
+-package io.papermc.paper.ban;
+-
+-import org.jetbrains.annotations.ApiStatus;
+-import org.jetbrains.annotations.NotNull;
+-
+-@ApiStatus.Internal
+-record BanListTypeImpl<T>(@NotNull Class<T> typeClass) implements BanListType<T> {
+-}
+diff --git a/src/main/java/org/bukkit/BanEntry.java b/src/main/java/org/bukkit/BanEntry.java
+deleted file mode 100644
+index fc4da11c9daf6323dc5cc589d03e98a6831eb5cb..0000000000000000000000000000000000000000
+--- a/src/main/java/org/bukkit/BanEntry.java
++++ /dev/null
+@@ -1,152 +0,0 @@
+-package org.bukkit;
+-
+-import java.util.Date;
+-import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
+-
+-/**
+- * A single entry from a ban list. This may represent either a player ban or
+- * an IP ban.
+- * <p>
+- * Ban entries include the following properties:
+- * <table border=1>
+- * <caption>Property information</caption>
+- * <tr>
+- *     <th>Property</th>
+- *     <th>Description</th>
+- * </tr><tr>
+- *     <td>Target Profile / IP Address</td>
+- *     <td>The target profile or IP address</td>
+- * </tr><tr>
+- *     <td>Creation Date</td>
+- *     <td>The creation date of the ban</td>
+- * </tr><tr>
+- *     <td>Source</td>
+- *     <td>The source of the ban, such as a player, console, plugin, etc</td>
+- * </tr><tr>
+- *     <td>Expiration Date</td>
+- *     <td>The expiration date of the ban</td>
+- * </tr><tr>
+- *     <td>Reason</td>
+- *     <td>The reason for the ban</td>
+- * </tr>
+- * </table>
+- * <p>
+- * Unsaved information is not automatically written to the implementation's
+- * ban list, instead, the {@link #save()} method must be called to write the
+- * changes to the ban list. If this ban entry has expired (such as from an
+- * unban) and is no longer found in the list, the {@link #save()} call will
+- * re-add it to the list, therefore banning the victim specified.
+- * <p>
+- * Likewise, changes to the associated {@link BanList} or other entries may or
+- * may not be reflected in this entry.
+- *
+- * @param <T> The ban target
+- */
+-public interface BanEntry<T> {
+-
+-    /**
+-     * Gets the target involved. This may be in the form of an IP or a player
+-     * name.
+-     *
+-     * @return the target name or IP address
+-     * @deprecated See {@link #getBanTarget()}
+-     */
+-    @Deprecated
+-    @NotNull
+-    public String getTarget();
+-
+-    /**
+-     * Gets the target involved.
+-     *
+-     * @return the target profile or IP address
+-     */
+-    @NotNull
+-    public T getBanTarget();
+-
+-    /**
+-     * Gets the date this ban entry was created.
+-     *
+-     * @return the creation date
+-     */
+-    @NotNull
+-    public Date getCreated();
+-
+-    /**
+-     * Sets the date this ban entry was created.
+-     *
+-     * @param created the new created date, cannot be null
+-     * @see #save() saving changes
+-     */
+-    public void setCreated(@NotNull Date created);
+-
+-    /**
+-     * Gets the source of this ban.
+-     * <p>
+-     * Note: A source is considered any String, although this is generally a
+-     * player name.
+-     *
+-     * @return the source of the ban
+-     */
+-    @NotNull
+-    public String getSource();
+-
+-    /**
+-     * Sets the source of this ban.
+-     * <p>
+-     * Note: A source is considered any String, although this is generally a
+-     * player name.
+-     *
+-     * @param source the new source where null values become empty strings
+-     * @see #save() saving changes
+-     */
+-    public void setSource(@NotNull String source);
+-
+-    /**
+-     * Gets the date this ban expires on, or null for no defined end date.
+-     *
+-     * @return the expiration date
+-     */
+-    @Nullable
+-    public Date getExpiration();
+-
+-    /**
+-     * Sets the date this ban expires on. Null values are considered
+-     * "infinite" bans.
+-     *
+-     * @param expiration the new expiration date, or null to indicate an
+-     *     eternity
+-     * @see #save() saving changes
+-     */
+-    public void setExpiration(@Nullable Date expiration);
+-
+-    /**
+-     * Gets the reason for this ban.
+-     *
+-     * @return the ban reason, or null if not set
+-     */
+-    @Nullable
+-    public String getReason();
+-
+-    /**
+-     * Sets the reason for this ban. Reasons must not be null.
+-     *
+-     * @param reason the new reason, null values assume the implementation
+-     *     default
+-     * @see #save() saving changes
+-     */
+-    public void setReason(@Nullable String reason);
+-
+-    /**
+-     * Saves the ban entry, overwriting any previous data in the ban list.
+-     * <p>
+-     * Saving the ban entry of an unbanned player will cause the player to be
+-     * banned once again.
+-     */
+-    public void save();
+-
+-    /**
+-     * Removes this ban entry from the appropriate ban list.
+-     */
+-    public void remove();
+-}
+diff --git a/src/main/java/org/bukkit/BanList.java b/src/main/java/org/bukkit/BanList.java
+deleted file mode 100644
+index 739d9d3ec789e58c10c8d818a9ca59ce447600d5..0000000000000000000000000000000000000000
+--- a/src/main/java/org/bukkit/BanList.java
++++ /dev/null
+@@ -1,193 +0,0 @@
+-package org.bukkit;
+-
+-import java.time.Duration;
+-import java.time.Instant;
+-import java.util.Date;
+-import java.util.Set;
+-import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
+-
+-/**
+- * A ban list, containing bans of some {@link Type}.
+- *
+- * @param <T> The ban target
+- */
+-public interface BanList<T> {
+-
+-    /**
+-     * Represents a ban-type that a {@link BanList} may track.
+-     * @deprecated use {@link io.papermc.paper.ban.BanListType} to enforce the correct return value at compile time.
+-     */
+-    @Deprecated(since = "1.20.4") // Paper - BanList Type Improvements
+-    public enum Type {
+-        /**
+-         * Banned player names
+-         *
+-         * @deprecated deprecated in favor of {@link #PROFILE}
+-         */
+-        @Deprecated
+-        NAME,
+-        /**
+-         * Banned IP addresses
+-         */
+-        IP,
+-        /**
+-         * Banned player profiles
+-         */
+-        PROFILE,
+-        ;
+-    }
+-
+-    /**
+-     * Gets a {@link BanEntry} by target.
+-     * <p>
+-     * Bans by name for ban type {@link Type#NAME NAME} are no longer supported and this method will return
+-     * null when trying to request them. The replacement is bans by UUID.
+-     *
+-     * @param target entry parameter to search for
+-     * @return the corresponding entry, or null if none found
+-     * @deprecated see {@link #getBanEntry(Object)}
+-     */
+-    @Deprecated
+-    @Nullable
+-    public <E extends BanEntry<? super T>> E getBanEntry(@NotNull String target); // Paper
+-
+-    /**
+-     * Gets a {@link BanEntry} by target.
+-     *
+-     * @param target entry parameter to search for
+-     * @return the corresponding entry, or null if none found
+-     */
+-    @Nullable
+-    public BanEntry<T> getBanEntry(@NotNull T target);
+-
+-    /**
+-     * Adds a ban to this list. If a previous ban exists, this will
+-     * update the previous entry.
+-     * <p>
+-     * Bans by name for ban type {@link Type#NAME NAME} are no longer supported and this method will return
+-     * null when trying to request them. The replacement is bans by UUID.
+-     *
+-     * @param target the target of the ban
+-     * @param reason reason for the ban, null indicates implementation default
+-     * @param expires date for the ban's expiration (unban), or null to imply
+-     *     forever
+-     * @param source source of the ban, null indicates implementation default
+-     * @return the entry for the newly created ban, or the entry for the
+-     *     (updated) previous ban
+-     * @deprecated see {@link #addBan(Object, String, Date, String)}
+-     */
+-    @Deprecated
+-    @Nullable
+-    public <E extends BanEntry<? super T>> E addBan(@NotNull String target, @Nullable String reason, @Nullable Date expires, @Nullable String source); // Paper
+-
+-    /**
+-     * Adds a ban to this list. If a previous ban exists, this will
+-     * update the previous entry.
+-     *
+-     * @param target the target of the ban
+-     * @param reason reason for the ban, null indicates implementation default
+-     * @param expires date for the ban's expiration (unban), or null to imply
+-     *     forever
+-     * @param source source of the ban, null indicates implementation default
+-     * @return the entry for the newly created ban, or the entry for the
+-     *     (updated) previous ban
+-     */
+-    @Nullable
+-    public BanEntry<T> addBan(@NotNull T target, @Nullable String reason, @Nullable Date expires, @Nullable String source);
+-
+-    /**
+-     * Adds a ban to this list. If a previous ban exists, this will
+-     * update the previous entry.
+-     *
+-     * @param target the target of the ban
+-     * @param reason reason for the ban, null indicates implementation default
+-     * @param expires instant for the ban's expiration (unban), or null to imply
+-     *     forever
+-     * @param source source of the ban, null indicates implementation default
+-     * @return the entry for the newly created ban, or the entry for the
+-     *     (updated) previous ban
+-     */
+-    @Nullable
+-    public BanEntry<T> addBan(@NotNull T target, @Nullable String reason, @Nullable Instant expires, @Nullable String source);
+-
+-    /**
+-     * Adds a ban to this list. If a previous ban exists, this will
+-     * update the previous entry.
+-     *
+-     * @param target the target of the ban
+-     * @param reason reason for the ban, null indicates implementation default
+-     * @param duration the duration of the ban, or null to imply
+-     *     forever
+-     * @param source source of the ban, null indicates implementation default
+-     * @return the entry for the newly created ban, or the entry for the
+-     *     (updated) previous ban
+-     */
+-    @Nullable
+-    public BanEntry<T> addBan(@NotNull T target, @Nullable String reason, @Nullable Duration duration, @Nullable String source);
+-
+-    /**
+-     * Gets a set containing every {@link BanEntry} in this list.
+-     *
+-     * @return an immutable set containing every entry tracked by this list
+-     * @deprecated This return a generic class, prefer use {@link #getEntries()}
+-     */
+-    @Deprecated
+-    @NotNull
+-    public Set<BanEntry> getBanEntries();
+-
+-    /**
+-     * Gets a set containing every {@link BanEntry} in this list.
+-     *
+-     * @return an immutable set containing every entry tracked by this list
+-     */
+-    @NotNull
+-    public <E extends BanEntry<? super T>> Set<E> getEntries(); // Paper
+-
+-    /**
+-     * Gets if a {@link BanEntry} exists for the target, indicating an active
+-     * ban status.
+-     * <p>
+-     * Bans by name for ban type {@link Type#NAME NAME} are no longer supported.
+-     * The replacement is bans by UUID.
+-     *
+-     * @param target the target to find
+-     * @return true if a {@link BanEntry} exists for the target, indicating an
+-     *     active ban status, false otherwise
+-     */
+-    public boolean isBanned(@NotNull T target);
+-
+-    /**
+-     * Gets if a {@link BanEntry} exists for the target, indicating an active
+-     * ban status.
+-     *
+-     * @param target the target to find
+-     * @return true if a {@link BanEntry} exists for the target, indicating an
+-     *     active ban status, false otherwise
+-     * @deprecated see {@link #isBanned(Object)}
+-     */
+-    @Deprecated
+-    public boolean isBanned(@NotNull String target);
+-
+-    /**
+-     * Removes the specified target from this list, therefore indicating a
+-     * "not banned" status.
+-     * <p>
+-     * Bans by name for ban type {@link Type#NAME NAME} are no longer supported.
+-     * The replacement is bans by UUID.
+-     *
+-     * @param target the target to remove from this list
+-     */
+-    public void pardon(@NotNull T target);
+-
+-    /**
+-     * Removes the specified target from this list, therefore indicating a
+-     * "not banned" status.
+-     *
+-     * @param target the target to remove from this list
+-     *
+-     * @deprecated see {@link #pardon(Object)}
+-     */
+-    @Deprecated
+-    public void pardon(@NotNull String target);
+-}
+diff --git a/src/main/java/org/bukkit/ban/IpBanList.java b/src/main/java/org/bukkit/ban/IpBanList.java
+deleted file mode 100644
+index f024b67ad78c63574e2ee462cc16305d4c465609..0000000000000000000000000000000000000000
+--- a/src/main/java/org/bukkit/ban/IpBanList.java
++++ /dev/null
+@@ -1,11 +0,0 @@
+-package org.bukkit.ban;
+-
+-import java.net.InetAddress;
+-import org.bukkit.BanList;
+-
+-/**
+- * A {@link BanList} targeting IP bans.
+- */
+-public interface IpBanList extends BanList<InetAddress> {
+-
+-}
+diff --git a/src/main/java/org/bukkit/ban/ProfileBanList.java b/src/main/java/org/bukkit/ban/ProfileBanList.java
+deleted file mode 100644
+index 5248cf08ef83c7304dd76c42a2f646bb81e0efae..0000000000000000000000000000000000000000
+--- a/src/main/java/org/bukkit/ban/ProfileBanList.java
++++ /dev/null
+@@ -1,70 +0,0 @@
+-package org.bukkit.ban;
+-
+-import java.util.Date;
+-import org.bukkit.BanEntry;
+-import org.bukkit.BanList;
+-import org.bukkit.profile.PlayerProfile;
+-import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
+-
+-/**
+- * A {@link BanList} targeting player profile bans.
+- */
+-public interface ProfileBanList extends BanList<com.destroystokyo.paper.profile.PlayerProfile> { // Paper
+-
+-    /**
+-     * {@inheritDoc}
+-     *
+-     * @param target the target of the ban
+-     * @param reason reason for the ban, null indicates implementation default
+-     * @param expires date for the ban's expiration (unban), or null to imply
+-     *     forever
+-     * @param source source of the ban, null indicates implementation default
+-     * @return the entry for the newly created ban, or the entry for the
+-     *     (updated) previous ban
+-     * @throws IllegalArgumentException if ProfilePlayer has an invalid UUID
+-     * @deprecated use {@link #addBan(com.destroystokyo.paper.profile.PlayerProfile, String, Date, String)}
+-     */
+-    @Nullable
+-    // Paper start
+-    @Deprecated
+-    public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E addBan(@NotNull PlayerProfile target, @Nullable String reason, @Nullable Date expires, @Nullable String source);
+-
+-    /**
+-     * @throws IllegalArgumentException if ProfilePlayer has an invalid UUID
+-     */
+-    @Nullable BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(com.destroystokyo.paper.profile.@NotNull PlayerProfile target, @Nullable String reason, @Nullable Date expires, @Nullable String source);
+-
+-    // the 5 methods below are added to maintain compat for the bukkit.PlayerProfile parameter type
+-    /**
+-     * @deprecated use {@link #getBanEntry(Object)}
+-     */
+-    @Deprecated
+-    @Nullable <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E getBanEntry(@NotNull PlayerProfile target);
+-
+-    /**
+-     * @deprecated use {@link #isBanned(Object)}
+-     */
+-    @Deprecated
+-    boolean isBanned(@NotNull PlayerProfile target);
+-
+-    /**
+-     * @deprecated use {@link #pardon(Object)}
+-     */
+-    @Deprecated
+-    void pardon(@NotNull PlayerProfile target);
+-
+-    /**
+-     * @deprecated use {@link #addBan(Object, String, java.time.Instant, String)}
+-     */
+-    @Deprecated
+-    @Nullable <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E addBan(@NotNull PlayerProfile target, @Nullable String reason, @Nullable java.time.Instant expires, @Nullable String source);
+-
+-    /**
+-     * @deprecated use {@link #addBan(Object, String, java.time.Duration, String)}
+-     */
+-    @Deprecated
+-    @Nullable <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E addBan(@NotNull PlayerProfile target, @Nullable String reason, @Nullable java.time.Duration duration, @Nullable String source);
+-
+-    // Paper end
+-}
+diff --git a/src/main/java/org/bukkit/ban/package-info.java b/src/main/java/org/bukkit/ban/package-info.java
+deleted file mode 100644
+index 946b72ad7e81f8611422f4385ef2a5b217c68217..0000000000000000000000000000000000000000
+--- a/src/main/java/org/bukkit/ban/package-info.java
++++ /dev/null
+@@ -1,4 +0,0 @@
+-/**
+- * Classes relevant to bans.
+- */
+-package org.bukkit.ban;
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 7798520781f9002a0aa6f2bd0d576ed88a3b1bad..7ae74ca877d0a9ae035efb24e6872f76003733b6 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -1,15 +1,12 @@
+ package org.bukkit.entity;
+ 
+-import java.net.InetAddress;
+ import java.net.InetSocketAddress;
+ import java.time.Duration;
+-import java.time.Instant;
+ import java.util.Collection;
+-import java.util.Date;
+ import java.util.Map;
+ import java.util.UUID;
+ import java.util.concurrent.CompletableFuture;
+-import org.bukkit.BanEntry;
++
+ import org.bukkit.DyeColor;
+ import org.bukkit.Effect;
+ import org.bukkit.GameMode;
+@@ -96,7 +93,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * Respawns the player if dead.
+      */
+     void respawn();
+-    
++
+     /**
+      * @return a [PlayerData] object which can hold
+      * arbitrary data from different methods.
