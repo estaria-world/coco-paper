@@ -1,0 +1,87 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 20:39:26 +0200
+Subject: [PATCH] remove ban methods in CraftServer
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index b76610b67e69a509f8b80d07484de442b1aab74f..f7394a30ee4e4404c1f5b6c205c1fedb6023e48c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -2191,76 +2191,6 @@ public final class CraftServer implements Server {
+         return player;
+     }
+ 
+-    @Override
+-    @SuppressWarnings("unchecked")
+-    public Set<String> getIPBans() {
+-        return this.playerList.getIpBans().getEntries().stream().map(IpBanListEntry::getUser).collect(Collectors.toSet());
+-    }
+-
+-    @Override
+-    public void banIP(String address) {
+-        Preconditions.checkArgument(address != null && !address.isBlank(), "Address cannot be null or blank.");
+-
+-        this.getBanList(org.bukkit.BanList.Type.IP).addBan(address, null, null, null);
+-    }
+-
+-    @Override
+-    public void unbanIP(String address) {
+-        Preconditions.checkArgument(address != null && !address.isBlank(), "Address cannot be null or blank.");
+-
+-        this.getBanList(org.bukkit.BanList.Type.IP).pardon(address);
+-    }
+-
+-    @Override
+-    public void banIP(InetAddress address) {
+-        Preconditions.checkArgument(address != null, "Address cannot be null.");
+-
+-        ((CraftIpBanList) this.getBanList(BanList.Type.IP)).addBan(address, null, (Date) null, null);
+-    }
+-
+-    @Override
+-    public void unbanIP(InetAddress address) {
+-        Preconditions.checkArgument(address != null, "Address cannot be null.");
+-
+-        ((CraftIpBanList) this.getBanList(BanList.Type.IP)).pardon(address);
+-    }
+-
+-    @Override
+-    public Set<OfflinePlayer> getBannedPlayers() {
+-        Set<OfflinePlayer> result = new HashSet<OfflinePlayer>();
+-
+-        for (UserBanListEntry entry : this.playerList.getBans().getEntries()) {
+-            result.add(this.getOfflinePlayer(entry.getUser()));
+-        }
+-
+-        return result;
+-    }
+-
+-    @Override
+-    public <T extends BanList<?>> T getBanList(BanList.Type type) {
+-        Preconditions.checkArgument(type != null, "BanList.Type cannot be null");
+-
+-        return switch (type) {
+-            case IP -> (T) new CraftIpBanList(this.playerList.getIpBans());
+-            case PROFILE, NAME -> (T) new CraftProfileBanList(this.playerList.getBans());
+-        };
+-    }
+-
+-    // Paper start - add BanListType (which has a generic)
+-    @SuppressWarnings("unchecked")
+-    @Override
+-    public <B extends BanList<E>, E> B getBanList(final io.papermc.paper.ban.BanListType<B> type) {
+-        Preconditions.checkArgument(type != null, "BanList.BanType cannot be null");
+-        if (type == io.papermc.paper.ban.BanListType.IP) {
+-            return (B) new CraftIpBanList(this.playerList.getIpBans());
+-        } else if (type == io.papermc.paper.ban.BanListType.PROFILE) {
+-            return (B) new CraftProfileBanList(this.playerList.getBans());
+-        } else {
+-            throw new IllegalArgumentException("Unknown BanListType: " + type);
+-        }
+-    }
+-    // Paper end - add BanListType (which has a generic)
+-
+     @Override
+     public void setWhitelist(boolean value) {
+         this.playerList.setUsingWhiteList(value);
