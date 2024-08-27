@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 20:13:26 +0200
+Subject: [PATCH] disable some default minecraft commands
+
+
+diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
+index e372fe02b2040ffe0bc196bc9aad9f32b8ba7c61..f2ed2405f02668d28a4c1af92385aa5cb8f20c2b 100644
+--- a/src/main/java/net/minecraft/commands/Commands.java
++++ b/src/main/java/net/minecraft/commands/Commands.java
+@@ -195,14 +195,14 @@ public class Commands {
+         ReturnCommand.register(this.dispatcher);
+         RideCommand.register(this.dispatcher);
+         // SayCommand.register(this.dispatcher); CocoPaper
+-        ScheduleCommand.register(this.dispatcher);
++        // ScheduleCommand.register(this.dispatcher); CocoPaper
+         ScoreboardCommand.register(this.dispatcher, commandRegistryAccess);
+         SeedCommand.register(this.dispatcher, environment != Commands.CommandSelection.INTEGRATED);
+         SetBlockCommand.register(this.dispatcher, commandRegistryAccess);
+-        SetSpawnCommand.register(this.dispatcher);
++        // SetSpawnCommand.register(this.dispatcher); CocoPaper
+         SetWorldSpawnCommand.register(this.dispatcher);
+         SpectateCommand.register(this.dispatcher);
+-        SpreadPlayersCommand.register(this.dispatcher);
++        // SpreadPlayersCommand.register(this.dispatcher); CocoPaper
+         StopSoundCommand.register(this.dispatcher);
+         SummonCommand.register(this.dispatcher, commandRegistryAccess);
+         TagCommand.register(this.dispatcher);
+@@ -213,7 +213,7 @@ public class Commands {
+         TickCommand.register(this.dispatcher);
+         TimeCommand.register(this.dispatcher);
+         TitleCommand.register(this.dispatcher, commandRegistryAccess);
+-        TriggerCommand.register(this.dispatcher);
++        // TriggerCommand.register(this.dispatcher); CocoPaper
+         WeatherCommand.register(this.dispatcher);
+         WorldBorderCommand.register(this.dispatcher);
+         if (JvmProfiler.INSTANCE.isAvailable()) {
+diff --git a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
+index 281030a4277d59c2d13ef46ddcb0488486d779a7..a6a1deba7fd18c0ca4032088f841eeb6beabb85c 100644
+--- a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
++++ b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
+@@ -72,7 +72,11 @@ public class MinecraftCommandPermissionsTest extends AbstractTestingBase {
+         "minecraft.command.banlist",
+         "minecraft.command.banplayer",
+         "minecraft.command.pardon",
+-        "minecraft.command.pardon-ip"
++        "minecraft.command.pardon-ip",
++        "minecraft.command.schedule",
++        "minecraft.command.trigger",
++        "minecraft.command.spreadplayers",
++        "minecraft.command.setspawn"
+     );
+     // CocoPaper end
+ 
