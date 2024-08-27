@@ -1,0 +1,126 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 21:24:30 +0200
+Subject: [PATCH] disable some log messages
+
+
+diff --git a/src/main/java/net/minecraft/advancements/AdvancementTree.java b/src/main/java/net/minecraft/advancements/AdvancementTree.java
+index e00d4e0896c0163c43d79af63338de67c7cb0dc4..d73908a8c1b553f1a27c6062de391d706c18f8b3 100644
+--- a/src/main/java/net/minecraft/advancements/AdvancementTree.java
++++ b/src/main/java/net/minecraft/advancements/AdvancementTree.java
+@@ -85,7 +85,7 @@ public class AdvancementTree {
+         Map map = this.nodes;
+ 
+         Objects.requireNonNull(this.nodes);
+-        AdvancementNode advancementnode = (AdvancementNode) optional.map(map::get).orElse((Object) null);
++        AdvancementNode advancementnode = (AdvancementNode) optional.map(map::get).orElse(null); // CocoPaper
+ 
+         if (advancementnode == null && optional.isPresent()) {
+             return false;
+diff --git a/src/main/java/net/minecraft/server/ServerAdvancementManager.java b/src/main/java/net/minecraft/server/ServerAdvancementManager.java
+index 2172e23b22b411fe79e930128bd43ac07becb620..242c6caa61f8ebaca46eec392ece16e67516c7ad 100644
+--- a/src/main/java/net/minecraft/server/ServerAdvancementManager.java
++++ b/src/main/java/net/minecraft/server/ServerAdvancementManager.java
+@@ -69,7 +69,7 @@ public class ServerAdvancementManager extends SimpleJsonResourceReloadListener {
+         AdvancementTree advancementtree = new AdvancementTree();
+ 
+         advancementtree.addAll(this.advancements.values());
+-        LOGGER.info("Loaded {} advancements", advancementtree.nodes().size()); // Paper - Improve logging and errors; moved from AdvancementTree#addAll
++        // LOGGER.info("Loaded {} advancements", advancementtree.nodes().size()); CocoPaper
+         Iterator iterator = advancementtree.roots().iterator();
+ 
+         while (iterator.hasNext()) {
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 99b715877fdeaf169653d45cd6d0cb2089eee226..668c0db4b5f2588607dc6b1a93d1b933b0d5dfa0 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -196,16 +196,6 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+             DedicatedServer.LOGGER.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+         }
+ 
+-        // Paper start - detect running as root
+-        if (io.papermc.paper.util.ServerEnvironment.userIsRootOrAdmin()) {
+-            DedicatedServer.LOGGER.warn("****************************");
+-            DedicatedServer.LOGGER.warn("YOU ARE RUNNING THIS SERVER AS AN ADMINISTRATIVE OR ROOT USER. THIS IS NOT ADVISED.");
+-            DedicatedServer.LOGGER.warn("YOU ARE OPENING YOURSELF UP TO POTENTIAL RISKS WHEN DOING THIS.");
+-            DedicatedServer.LOGGER.warn("FOR MORE INFORMATION, SEE https://madelinemiller.dev/blog/root-minecraft-server/");
+-            DedicatedServer.LOGGER.warn("****************************");
+-        }
+-        // Paper end - detect running as root
+-
+         DedicatedServer.LOGGER.info("Loading properties");
+         DedicatedServerProperties dedicatedserverproperties = this.settings.getProperties();
+ 
+diff --git a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
+index 8aff5129f85ab5729b3da2e465871be62d15bdf2..2929d9a2efa9669781b6773161db7c5f968c2544 100644
+--- a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
++++ b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
+@@ -106,11 +106,6 @@ public class ServerConnectionListener {
+                 ServerConnectionListener.LOGGER.info("Using default channel type");
+             }
+ 
+-            // Paper start - Use Velocity cipher
+-            ServerConnectionListener.LOGGER.info("Paper: Using " + com.velocitypowered.natives.util.Natives.compress.getLoadedVariant() + " compression from Velocity.");
+-            ServerConnectionListener.LOGGER.info("Paper: Using " + com.velocitypowered.natives.util.Natives.cipher.getLoadedVariant() + " cipher from Velocity.");
+-            // Paper end - Use Velocity cipher
+-
+             this.channels.add(((ServerBootstrap) ((ServerBootstrap) (new ServerBootstrap()).channel(oclass)).childHandler(new ChannelInitializer<Channel>() {
+                 protected void initChannel(Channel channel) {
+                     try {
+diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index b0f7a378f19b9837c060c891002cd5db756cdae1..a80229d4a5f855eca447a391403cc54445d112e3 100644
+--- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -205,7 +205,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+                             GameProfile gameprofile = ServerLoginPacketListenerImpl.this.createOfflineProfile(ServerLoginPacketListenerImpl.this.requestedUsername); // Spigot
+ 
+                             gameprofile = ServerLoginPacketListenerImpl.this.callPlayerPreLoginEvents(gameprofile); // Paper - Add more fields to AsyncPlayerPreLoginEvent
+-                            ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameprofile.getName(), gameprofile.getId());
++                            // ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameprofile.getName(), gameprofile.getId()); CocoPaper
+                             ServerLoginPacketListenerImpl.this.startClientVerification(gameprofile);
+                         } catch (Exception ex) {
+                             ServerLoginPacketListenerImpl.this.disconnect("Failed to verify username!");
+@@ -311,7 +311,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+                         }
+                         gameprofile = ServerLoginPacketListenerImpl.this.callPlayerPreLoginEvents(gameprofile); // Paper - Add more fields to AsyncPlayerPreLoginEvent
+                         // CraftBukkit end
+-                        ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameprofile.getName(), gameprofile.getId());
++                        // ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameprofile.getName(), gameprofile.getId()); CocoPaper
+                         ServerLoginPacketListenerImpl.this.startClientVerification(gameprofile);
+                     } else if (ServerLoginPacketListenerImpl.this.server.isSingleplayer()) {
+                         ServerLoginPacketListenerImpl.LOGGER.warn("Failed to verify username but will let them in anyway!");
+@@ -435,7 +435,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+             authenticatorPool.execute(() -> {
+                 try {
+                     final GameProfile gameprofile = this.callPlayerPreLoginEvents(this.authenticatedProfile);
+-                    ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameprofile.getName(), gameprofile.getId());
++                    // ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameprofile.getName(), gameprofile.getId()); CocoPaper
+                     ServerLoginPacketListenerImpl.this.startClientVerification(gameprofile);
+                 } catch (Exception ex) {
+                     disconnect("Failed to verify username!");
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 0368d6ba9cc9fe557d3c7172a87a7a5b15445e47..9bd21f236fad62743db0a70996248b8660eb9b20 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -480,7 +480,7 @@ public abstract class PlayerList {
+             scoreboard.addPlayerToTeam(player.getScoreboardName(), collideRuleTeam);
+         }
+         // Paper end - Configurable player collision
+-        PlayerList.LOGGER.info("{}[{}] logged in with entity id {} at ([{}]{}, {}, {})", player.getName().getString(), s1, player.getId(), worldserver1.serverLevelData.getLevelName(), player.getX(), player.getY(), player.getZ());
++        PlayerList.LOGGER.info("{} logged in with entity id {}", player.getName().getString(), player.getId()); // CocoPaper
+     }
+ 
+     public void updateEntireScoreboard(ServerScoreboard scoreboard, ServerPlayer player) {
+diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
+index de7c77c1b25680ecc65f0f43f2391aff269a974f..2783d34eab00ff3fde36ec712880b81e112e4fdf 100644
+--- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
++++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
+@@ -79,7 +79,7 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+         this.byType = LinkedHashMultimap.create(builder.build());
+         this.byName = Maps.newHashMap(com_google_common_collect_immutablemap_builder.build());
+         // CraftBukkit end
+-        RecipeManager.LOGGER.info("Loaded {} recipes", this.byName.size()); // Paper - Improve logging and errors; log correct number of recipes
++        // RecipeManager.LOGGER.info("Loaded {} recipes", this.byName.size()); CocoPaper
+     }
+ 
+     // CraftBukkit start
