@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 20:16:41 +0200
+Subject: [PATCH] remove log info message in SparksFly
+
+
+diff --git a/src/main/java/io/papermc/paper/SparksFly.java b/src/main/java/io/papermc/paper/SparksFly.java
+index 7966849bcd5d2125c385a395f3356a50260cef20..6acfd45ff913274847375e7f3b941d07989a14d0 100644
+--- a/src/main/java/io/papermc/paper/SparksFly.java
++++ b/src/main/java/io/papermc/paper/SparksFly.java
+@@ -37,7 +37,7 @@ public final class SparksFly {
+ 
+     public SparksFly(final Server server) {
+         this.logger = Logger.getLogger("Spark");
+-        this.logger.log(Level.INFO, "This server bundles the spark profiler. For more information please visit https://docs.papermc.io/paper/profiling");
++        // this.logger.log(Level.INFO, "This server bundles the spark profiler. For more information please visit https://docs.papermc.io/paper/profiling"); CocoPaper
+         this.spark = PaperSparkModule.create(Compatibility.VERSION_1_0, server, this.logger, new PaperScheduler() {
+             @Override
+             public void executeAsync(final Runnable runnable) {
