@@ -1,0 +1,131 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 20:39:40 +0200
+Subject: [PATCH] remove ban methods in Player and OfflinePlayer
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+index 9d93130f23addb18b97d7f5ec013faef17a74529..3ad5d88081cb2a08f125e88f92adb107137800f4 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+@@ -116,34 +116,6 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+         }
+     }
+ 
+-    @Override
+-    public boolean isBanned() {
+-        return ((ProfileBanList) this.server.getBanList(BanList.Type.PROFILE)).isBanned(this.getPlayerProfile());
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Date expires, String source) { // Paper - fix ban list API
+-        return ((ProfileBanList) this.server.getBanList(BanList.Type.PROFILE)).addBan(this.getPlayerProfile(), reason, expires, source);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Instant expires, String source) { // Paper - fix ban list API
+-        return ((ProfileBanList) this.server.getBanList(BanList.Type.PROFILE)).addBan(this.getPlayerProfile(), reason, expires, source);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Duration duration, String source) { // Paper - fix ban list API
+-        return ((ProfileBanList) this.server.getBanList(BanList.Type.PROFILE)).addBan(this.getPlayerProfile(), reason, duration, source);
+-    }
+-
+-    public void setBanned(boolean value) {
+-        if (value) {
+-            ((ProfileBanList) this.server.getBanList(BanList.Type.PROFILE)).addBan(this.getPlayerProfile(), null, (Date) null, null);
+-        } else {
+-            ((ProfileBanList) this.server.getBanList(BanList.Type.PROFILE)).pardon(this.getPlayerProfile());
+-        }
+-    }
+-
+     @Override
+     public boolean isWhitelisted() {
+         return this.server.getHandle().getWhiteList().isWhiteListed(this.profile);
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 7c28b817595a63cebd295f63a86c3d266141cb36..2c09d6c2afc382cb9ed13b6e16a7c4a4aa24a884 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1,5 +1,6 @@
+ package org.bukkit.craftbukkit.entity;
+ 
++import com.destroystokyo.paper.profile.PlayerProfile;
+ import com.google.common.base.Preconditions;
+ import com.google.common.collect.ImmutableSet;
+ import com.google.common.io.BaseEncoding;
+@@ -125,8 +126,6 @@ import org.bukkit.Sound;
+ import org.bukkit.Statistic;
+ import org.bukkit.WeatherType;
+ import org.bukkit.WorldBorder;
+-import org.bukkit.ban.IpBanList;
+-import org.bukkit.ban.ProfileBanList;
+ import org.bukkit.block.Block;
+ import org.bukkit.block.BlockState;
+ import org.bukkit.block.Sign;
+@@ -1776,65 +1775,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getHandle().resetPlayerWeather();
+     }
+ 
+-    @Override
+-    public boolean isBanned() {
+-        return ((ProfileBanList) this.server.getBanList(BanList.Type.PROFILE)).isBanned(this.getPlayerProfile());
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Date expires, String source) { // Paper - fix ban list API
+-        return this.ban(reason, expires, source, true);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Instant expires, String source) { // Paper - fix ban list API
+-        return this.ban(reason, expires != null ? Date.from(expires) : null, source);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Duration duration, String source) { // Paper - fix ban list API
+-        return this.ban(reason, duration != null ? Instant.now().plus(duration) : null, source);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Date expires, String source, boolean kickPlayer) { // Paper - fix ban list API
+-        BanEntry<com.destroystokyo.paper.profile.PlayerProfile> banEntry = ((ProfileBanList) this.server.getBanList(BanList.Type.PROFILE)).addBan(this.getPlayerProfile(), reason, expires, source); // Paper - fix ban list API
+-        if (kickPlayer) {
+-            this.kickPlayer(reason);
+-        }
+-        return banEntry;
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Instant instant, String source, boolean kickPlayer) { // Paper - fix ban list API
+-        return this.ban(reason, instant != null ? Date.from(instant) : null, source, kickPlayer);
+-    }
+-
+-    @Override
+-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> ban(String reason, Duration duration, String source, boolean kickPlayer) { // Paper - fix ban list API
+-        return this.ban(reason, duration != null ? Instant.now().plus(duration) : null, source, kickPlayer);
+-    }
+-
+-    @Override
+-    public BanEntry<InetAddress> banIp(String reason, Date expires, String source, boolean kickPlayer) {
+-        Preconditions.checkArgument(this.getAddress() != null, "The Address of this Player is null");
+-        BanEntry<InetAddress> banEntry = ((IpBanList) this.server.getBanList(BanList.Type.IP)).addBan(this.getAddress().getAddress(), reason, expires, source);
+-        if (kickPlayer) {
+-            this.kickPlayer(reason);
+-        }
+-        return banEntry;
+-    }
+-
+-    @Override
+-    public BanEntry<InetAddress> banIp(String reason, Instant instant, String source, boolean kickPlayer) {
+-        return this.banIp(reason, instant != null ? Date.from(instant) : null, source, kickPlayer);
+-    }
+-
+-    @Override
+-    public BanEntry<InetAddress> banIp(String reason, Duration duration, String source, boolean kickPlayer) {
+-        return this.banIp(reason, duration != null ? Instant.now().plus(duration) : null, source, kickPlayer);
+-    }
+-
+     @Override
+     public boolean isWhitelisted() {
+         return this.server.getHandle().getWhiteList().isWhiteListed(this.getProfile());
