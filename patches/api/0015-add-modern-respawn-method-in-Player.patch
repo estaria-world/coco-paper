@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 20:49:20 +0200
+Subject: [PATCH] add modern respawn method in Player
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index f1bbe8db93876a5ea1406b3d93a090e0027a0d2c..7798520781f9002a0aa6f2bd0d576ed88a3b1bad 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -92,6 +92,11 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+     // Paper end
+ 
+     // CocoPaper start
++    /**
++     * Respawns the player if dead.
++     */
++    void respawn();
++    
+     /**
+      * @return a [PlayerData] object which can hold
+      * arbitrary data from different methods.
