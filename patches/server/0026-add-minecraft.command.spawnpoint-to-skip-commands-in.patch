@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 20:28:20 +0200
+Subject: [PATCH] add minecraft.command.spawnpoint to skip commands in
+ MinecraftCommandPermissionsTest
+
+
+diff --git a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
+index a6a1deba7fd18c0ca4032088f841eeb6beabb85c..1b2d45543e075ee0a75775aea916000b5603c2c4 100644
+--- a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
++++ b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
+@@ -76,7 +76,8 @@ public class MinecraftCommandPermissionsTest extends AbstractTestingBase {
+         "minecraft.command.schedule",
+         "minecraft.command.trigger",
+         "minecraft.command.spreadplayers",
+-        "minecraft.command.setspawn"
++        "minecraft.command.setspawn",
++        "minecraft.command.spawnpoint"
+     );
+     // CocoPaper end
+ 
