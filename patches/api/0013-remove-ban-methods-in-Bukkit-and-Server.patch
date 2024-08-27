@@ -1,0 +1,195 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Tue, 27 Aug 2024 20:32:31 +0200
+Subject: [PATCH] remove ban methods in Bukkit and Server
+
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index f7330af1f7ce16f2112de6a9992957d1bfdceff8..4697e48e309cab61dd9c2c03308fe94c9c7675b5 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -1606,97 +1606,6 @@ public final class Bukkit {
+         return server.createPlayerProfile(name);
+     }
+ 
+-    /**
+-     * Gets a set containing all current IPs that are banned.
+-     *
+-     * @return a set containing banned IP addresses
+-     */
+-    @NotNull
+-    public static Set<String> getIPBans() {
+-        return server.getIPBans();
+-    }
+-
+-    /**
+-     * Bans the specified address from the server.
+-     *
+-     * @param address the IP address to ban
+-     *
+-     * @deprecated see {@link #banIP(InetAddress)}
+-     */
+-    @Deprecated
+-    public static void banIP(@NotNull String address) {
+-        server.banIP(address);
+-    }
+-
+-    /**
+-     * Unbans the specified address from the server.
+-     *
+-     * @param address the IP address to unban
+-     *
+-     * @deprecated see {@link #unbanIP(InetAddress)}
+-     */
+-    @Deprecated
+-    public static void unbanIP(@NotNull String address) {
+-        server.unbanIP(address);
+-    }
+-
+-    /**
+-     * Bans the specified address from the server.
+-     *
+-     * @param address the IP address to ban
+-     */
+-    public static void banIP(@NotNull InetAddress address) {
+-        server.banIP(address);
+-    }
+-
+-    /**
+-     * Unbans the specified address from the server.
+-     *
+-     * @param address the IP address to unban
+-     */
+-    public static void unbanIP(@NotNull InetAddress address) {
+-        server.unbanIP(address);
+-    }
+-
+-    /**
+-     * Gets a set containing all banned players.
+-     *
+-     * @return a set containing banned players
+-     */
+-    @NotNull
+-    public static Set<OfflinePlayer> getBannedPlayers() {
+-        return server.getBannedPlayers();
+-    }
+-
+-    /**
+-     * Gets a ban list for the supplied type.
+-     *
+-     * @param type the type of list to fetch, cannot be null
+-     * @param <T> The ban target
+-     *
+-     * @return a ban list of the specified type
+-     * @deprecated use {@link #getBanList(io.papermc.paper.ban.BanListType)} to enforce the correct return value at compile time.
+-     */
+-    @NotNull
+-    @Deprecated(since = "1.20.4") // Paper - add BanListType (which has a generic)
+-    public static <T extends BanList<?>> T getBanList(@NotNull BanList.Type type) {
+-        return server.getBanList(type);
+-    }
+-    // Paper start - add BanListType (which has a generic)
+-    /**
+-     * Gets a ban list for the supplied type.
+-     *
+-     * @param type the type of list to fetch, cannot be null
+-     * @param <B> The ban target
+-     *
+-     * @return a ban list of the specified type
+-     */
+-    @NotNull
+-    public static <B extends BanList<E>, E> B getBanList(final io.papermc.paper.ban.@NotNull BanListType<B> type) {
+-        return server.getBanList(type);
+-    }
+-    // Paper end - add BanListType (which has a generic)
+-
+     /**
+      * Gets a set containing all player operators.
+      *
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 562ab94a8776463e9d459171f03559e58c144d72..2c8e2f3ca57c68e8d3295ffab9a089c3ffbc781d 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -1374,82 +1374,6 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+     @Deprecated(since = "1.18.1") // Paper
+     PlayerProfile createPlayerProfile(@NotNull String name);
+ 
+-    /**
+-     * Gets a set containing all current IPs that are banned.
+-     *
+-     * @return a set containing banned IP addresses
+-     */
+-    @NotNull
+-    public Set<String> getIPBans();
+-
+-    /**
+-     * Bans the specified address from the server.
+-     *
+-     * @param address the IP address to ban
+-     *
+-     * @deprecated see {@link #banIP(InetAddress)}
+-     */
+-    @Deprecated
+-    public void banIP(@NotNull String address);
+-
+-    /**
+-     * Unbans the specified address from the server.
+-     *
+-     * @param address the IP address to unban
+-     *
+-     * @deprecated see {@link #unbanIP(InetAddress)}
+-     */
+-    @Deprecated
+-    public void unbanIP(@NotNull String address);
+-
+-    /**
+-     * Bans the specified address from the server.
+-     *
+-     * @param address the IP address to ban
+-     */
+-    public void banIP(@NotNull InetAddress address);
+-
+-    /**
+-     * Unbans the specified address from the server.
+-     *
+-     * @param address the IP address to unban
+-     */
+-    public void unbanIP(@NotNull InetAddress address);
+-
+-    /**
+-     * Gets a set containing all banned players.
+-     *
+-     * @return a set containing banned players
+-     */
+-    @NotNull
+-    public Set<OfflinePlayer> getBannedPlayers();
+-
+-    /**
+-     * Gets a ban list for the supplied type.
+-     *
+-     * @param type the type of list to fetch, cannot be null
+-     * @param <T> The ban target
+-     *
+-     * @return a ban list of the specified type
+-     * @deprecated use {@link #getBanList(io.papermc.paper.ban.BanListType)} to enforce the correct return value at compile time.
+-     */
+-    @Deprecated // Paper - add BanListType (which has a generic)
+-    @NotNull
+-    public <T extends BanList<?>> T getBanList(@NotNull BanList.Type type);
+-
+-    // Paper start - add BanListType (which has a generic)
+-    /**
+-     * Gets a ban list for the supplied type.
+-     *
+-     * @param type the type of list to fetch, cannot be null
+-     * @param <B> The ban target
+-     *
+-     * @return a ban list of the specified type
+-     */
+-    @NotNull
+-    <B extends BanList<E>, E> B getBanList(@NotNull io.papermc.paper.ban.BanListType<B> type);
+-    // Paper end - add BanListType (which has a generic)
+-
+     /**
+      * Gets a set containing all player operators.
+      *
