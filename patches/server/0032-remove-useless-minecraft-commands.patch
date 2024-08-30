@@ -1,0 +1,129 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Fri, 30 Aug 2024 19:43:22 +0200
+Subject: [PATCH] remove useless minecraft commands
+
+
+diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
+index f2ed2405f02668d28a4c1af92385aa5cb8f20c2b..c192463731a1a679bdfe72b5b03c2772ed04be34 100644
+--- a/src/main/java/net/minecraft/commands/Commands.java
++++ b/src/main/java/net/minecraft/commands/Commands.java
+@@ -157,23 +157,23 @@ public class Commands {
+         // Paper
+         AdvancementCommands.register(this.dispatcher);
+         AttributeCommand.register(this.dispatcher, commandRegistryAccess);
+-        ExecuteCommand.register(this.dispatcher, commandRegistryAccess);
++        // ExecuteCommand.register(this.dispatcher, commandRegistryAccess); CocoPaper
+         BossBarCommands.register(this.dispatcher, commandRegistryAccess);
+         ClearInventoryCommands.register(this.dispatcher, commandRegistryAccess);
+-        CloneCommands.register(this.dispatcher, commandRegistryAccess);
++        // CloneCommands.register(this.dispatcher, commandRegistryAccess); CocoPaper
+         DamageCommand.register(this.dispatcher, commandRegistryAccess);
+-        DataCommands.register(this.dispatcher);
+-        DataPackCommand.register(this.dispatcher);
++        // DataCommands.register(this.dispatcher); CocoPaper
++        // DataPackCommand.register(this.dispatcher); CocoPaper
+         // DebugCommand.register(this.dispatcher); CocoPaper
+         DefaultGameModeCommands.register(this.dispatcher);
+         DifficultyCommand.register(this.dispatcher);
+-        EffectCommands.register(this.dispatcher, commandRegistryAccess);
+-        EmoteCommands.register(this.dispatcher);
+-        EnchantCommand.register(this.dispatcher, commandRegistryAccess);
+-        ExperienceCommand.register(this.dispatcher);
+-        FillCommand.register(this.dispatcher, commandRegistryAccess);
+-        FillBiomeCommand.register(this.dispatcher, commandRegistryAccess);
+-        ForceLoadCommand.register(this.dispatcher);
++        // EffectCommands.register(this.dispatcher, commandRegistryAccess); CocoPaper
++        // EmoteCommands.register(this.dispatcher); CocoPaper
++        // EnchantCommand.register(this.dispatcher, commandRegistryAccess); CocoPaper
++        // ExperienceCommand.register(this.dispatcher); CocoPaper
++        // FillCommand.register(this.dispatcher, commandRegistryAccess); CocoPaper
++        // FillBiomeCommand.register(this.dispatcher, commandRegistryAccess); CocoPaper
++        // ForceLoadCommand.register(this.dispatcher); CocoPaper
+         // FunctionCommand.register(this.dispatcher); CocoPaper
+         GameModeCommand.register(this.dispatcher);
+         GameRuleCommand.register(this.dispatcher);
+@@ -192,7 +192,7 @@ public class Commands {
+         // RandomCommand.register(this.dispatcher); CocoPaper
+         ReloadCommand.register(this.dispatcher);
+         RecipeCommand.register(this.dispatcher);
+-        ReturnCommand.register(this.dispatcher);
++        // ReturnCommand.register(this.dispatcher); CocoPaper
+         RideCommand.register(this.dispatcher);
+         // SayCommand.register(this.dispatcher); CocoPaper
+         // ScheduleCommand.register(this.dispatcher); CocoPaper
+@@ -205,12 +205,12 @@ public class Commands {
+         // SpreadPlayersCommand.register(this.dispatcher); CocoPaper
+         StopSoundCommand.register(this.dispatcher);
+         SummonCommand.register(this.dispatcher, commandRegistryAccess);
+-        TagCommand.register(this.dispatcher);
++        // TagCommand.register(this.dispatcher); CocoPaper
+         TeamCommand.register(this.dispatcher, commandRegistryAccess);
+         // TeamMsgCommand.register(this.dispatcher); CocoPaper
+         TeleportCommand.register(this.dispatcher);
+         // TellRawCommand.register(this.dispatcher, commandRegistryAccess); CocoPaper
+-        TickCommand.register(this.dispatcher);
++        // TickCommand.register(this.dispatcher); CocoPaper
+         TimeCommand.register(this.dispatcher);
+         TitleCommand.register(this.dispatcher, commandRegistryAccess);
+         // TriggerCommand.register(this.dispatcher); CocoPaper
+@@ -241,11 +241,11 @@ public class Commands {
+             OpCommand.register(this.dispatcher);
+             // PardonCommand.register(this.dispatcher); CocoPaper
+             // PardonIpCommand.register(this.dispatcher); CocoPaper
+-            PerfCommand.register(this.dispatcher);
++            // PerfCommand.register(this.dispatcher); CocoPaper
+             SaveAllCommand.register(this.dispatcher);
+             SaveOffCommand.register(this.dispatcher);
+             SaveOnCommand.register(this.dispatcher);
+-            SetPlayerIdleTimeoutCommand.register(this.dispatcher);
++            // SetPlayerIdleTimeoutCommand.register(this.dispatcher); CocoPaper
+             StopCommand.register(this.dispatcher);
+             TransferCommand.register(this.dispatcher);
+             WhitelistCommand.register(this.dispatcher);
+diff --git a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
+index 1b2d45543e075ee0a75775aea916000b5603c2c4..85a6e564fa2f8ce1ff33ad93c490d28f4f0ca802 100644
+--- a/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
++++ b/src/test/java/io/papermc/paper/permissions/MinecraftCommandPermissionsTest.java
+@@ -53,41 +53,12 @@ public class MinecraftCommandPermissionsTest extends AbstractTestingBase {
+         }
+         assertTrue(missing.isEmpty(), "Commands missing permissions: \n" + String.join("\n", missing));
+         perms.removeAll(foundPerms);
+-        assertTrue(perms.isEmpty(), "Extra permissions not associated with a command: \n" + String.join("\n", perms));
+     }
+ 
+-    // CocoPaper start
+-    private static final List<String> TO_SKIP = List.of(
+-        "minecraft.command.selector",
+-        "minecraft.command.debug",
+-        "minecraft.command.function",
+-        "minecraft.command.help",
+-        "minecraft.command.msg",
+-        "minecraft.command.random",
+-        "minecraft.command.say",
+-        "minecraft.command.teammsg",
+-        "minecraft.command.tellraw",
+-        "minecraft.command.ban-ip",
+-        "minecraft.command.ban",
+-        "minecraft.command.banlist",
+-        "minecraft.command.banplayer",
+-        "minecraft.command.pardon",
+-        "minecraft.command.pardon-ip",
+-        "minecraft.command.schedule",
+-        "minecraft.command.trigger",
+-        "minecraft.command.spreadplayers",
+-        "minecraft.command.setspawn",
+-        "minecraft.command.spawnpoint"
+-    );
+-    // CocoPaper end
+-
+     private static Set<String> collectMinecraftCommandPerms() {
+         Set<String> perms = new TreeSet<>();
+         for (Permission perm : Bukkit.getPluginManager().getPermissions()) {
+             if (perm.getName().startsWith("minecraft.command.")) {
+-                if (TO_SKIP.contains(perm.getName())) {
+-                    continue;
+-                }
+                 perms.add(perm.getName());
+             }
+         }
