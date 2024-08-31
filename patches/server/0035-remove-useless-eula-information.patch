@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Sat, 31 Aug 2024 20:46:57 +0200
+Subject: [PATCH] remove useless eula information
+
+
+diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
+index 1375f24f8b6266095ece46d13acd1de62eee3a55..d6a0ae19fc905a377b09d0f8d5fb86460d619630 100644
+--- a/src/main/java/net/minecraft/server/Main.java
++++ b/src/main/java/net/minecraft/server/Main.java
+@@ -156,12 +156,16 @@ public class Main {
+ 
+             // Spigot Start
+             boolean eulaAgreed = Boolean.getBoolean( "com.mojang.eula.agree" );
++
++            /* CocoPaper start
+             if ( eulaAgreed )
+             {
+                 System.err.println( "You have used the Spigot command line EULA agreement flag." );
+                 System.err.println( "By using this setting you are indicating your agreement to Mojang's EULA (https://account.mojang.com/documents/minecraft_eula)." );
+                 System.err.println( "If you do not agree to the above EULA please stop your server and remove this flag immediately." );
+             }
++            */ // CocoPaper end
++
+             // Spigot End
+             if (!eula.hasAgreedToEULA() && !eulaAgreed) { // Spigot
+                 Main.LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
