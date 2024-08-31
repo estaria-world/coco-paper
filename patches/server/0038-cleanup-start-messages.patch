@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Sat, 31 Aug 2024 22:05:51 +0200
+Subject: [PATCH] cleanup start messages
+
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 23ddd26af762c1cd7fb3920669abb96b3213ab37..a06706fef4ac0fda1db034aa3969c579ca4984e5 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1222,14 +1222,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+             // Spigot start
+             // Paper start - Improved Watchdog Support
+-            LOGGER.info("Running delayed init tasks");
++            // LOGGER.info("Running delayed init tasks"); CocoPaper
+             this.server.getScheduler().mainThreadHeartbeat(this.tickCount); // run all 1 tick delay tasks during init,
+             // this is going to be the first thing the tick process does anyways, so move done and run it after
+             // everything is init before watchdog tick.
+             // anything at 3+ won't be caught here but also will trip watchdog....
+             // tasks are default scheduled at -1 + delay, and first tick will tick at 1
+             final long actualDoneTimeMs = System.currentTimeMillis() - org.bukkit.craftbukkit.Main.BOOT_TIME.toEpochMilli(); // Paper - Add total time
+-            LOGGER.info("Done ({})! For help, type \"help\"", String.format(java.util.Locale.ROOT, "%.3fs", actualDoneTimeMs / 1000.00D)); // Paper - Add total time
++            LOGGER.info("Server is ready for use! ({})", String.format(java.util.Locale.ROOT, "%.3fs", actualDoneTimeMs / 1000.00D)); // Paper - Add total time
+             this.server.spark.enableBeforePlugins(); // Paper - spark
+             org.spigotmc.WatchdogThread.tick();
+             // Paper end - Improved Watchdog Support
+@@ -1239,15 +1239,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             long tickSection = Util.getNanos();
+             long currentTime;
+             // Paper end - further improve server tick loop
+-            // Paper start - Add onboarding message for initial server start
+-            if (io.papermc.paper.configuration.GlobalConfiguration.isFirstStart) {
+-                LOGGER.info("*************************************************************************************");
+-                LOGGER.info("This is the first time you're starting this server.");
+-                LOGGER.info("It's recommended you read our 'Getting Started' documentation for guidance.");
+-                LOGGER.info("View this and more helpful information here: https://docs.papermc.io/paper/next-steps");
+-                LOGGER.info("*************************************************************************************");
+-            }
+-            // Paper end - Add onboarding message for initial server start
+ 
+             while (this.running) {
+                 long i;
