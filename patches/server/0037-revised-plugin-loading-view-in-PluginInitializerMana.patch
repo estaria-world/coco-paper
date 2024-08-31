@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Sat, 31 Aug 2024 22:05:34 +0200
+Subject: [PATCH] revised plugin loading view in PluginInitializerManager
+
+
+diff --git a/src/main/java/io/papermc/paper/plugin/PluginInitializerManager.java b/src/main/java/io/papermc/paper/plugin/PluginInitializerManager.java
+index 70413fddd23ca1165cb5090cce4fddcb1bbca93f..e97722cf800ee703097534e1057bde008d94cbb3 100644
+--- a/src/main/java/io/papermc/paper/plugin/PluginInitializerManager.java
++++ b/src/main/java/io/papermc/paper/plugin/PluginInitializerManager.java
+@@ -117,33 +117,19 @@ public class PluginInitializerManager {
+         java.util.List<Path> files = ((java.util.List<File>) optionSet.valuesOf("add-plugin")).stream().map(File::toPath).toList();
+         io.papermc.paper.plugin.util.EntrypointUtil.registerProvidersFromSource(io.papermc.paper.plugin.provider.source.PluginFlagProviderSource.INSTANCE, files);
+ 
+-        final Set<String> paperPluginNames = new TreeSet<>();
+-        final Set<String> legacyPluginNames = new TreeSet<>();
++        // CocoPaper start
++        final Set<String> pluginNames = new TreeSet<>();
+         LaunchEntryPointHandler.INSTANCE.getStorage().forEach((entrypoint, providerStorage) -> {
+             providerStorage.getRegisteredProviders().forEach(provider -> {
+-                if (provider instanceof final SpigotPluginProvider legacy) {
+-                    legacyPluginNames.add(String.format("%s (%s)", legacy.getMeta().getName(), legacy.getMeta().getVersion()));
+-                } else if (provider instanceof final PaperPluginParent.PaperServerPluginProvider paper) {
+-                    paperPluginNames.add(String.format("%s (%s)", provider.getMeta().getName(), provider.getMeta().getVersion()));
+-                }
++                pluginNames.add(String.format("%s (%s)", provider.getMeta().getName(), provider.getMeta().getVersion()));
+             });
+         });
+-        final int total = paperPluginNames.size() + legacyPluginNames.size();
+-        LOGGER.info("Initialized {} plugin{}", total, total == 1 ? "" : "s");
+-        if (!paperPluginNames.isEmpty()) {
+-            if (LOGGER.isDebugEnabled()) {
+-                LOGGER.info("Paper plugins ({}):\n - {}", paperPluginNames.size(), String.join("\n - ", paperPluginNames));
+-            } else {
+-                LOGGER.info("Paper plugins ({}):\n - {}", paperPluginNames.size(), String.join(", ", paperPluginNames));
+-            }
+-        }
+-        if (!legacyPluginNames.isEmpty()) {
+-            if (LOGGER.isDebugEnabled()) {
+-                LOGGER.info("Bukkit plugins ({}):\n - {}", legacyPluginNames.size(), String.join("\n - ", legacyPluginNames));
+-            } else {
+-                LOGGER.info("Bukkit plugins ({}):\n - {}", legacyPluginNames.size(), String.join(", ", legacyPluginNames));
+-            }
++        final int total = pluginNames.size();
++        LOGGER.info("Initialized {} plugin{}:", total, total == 1 ? "" : "s");
++        for (String pluginName : pluginNames) {
++            LOGGER.info("- {}", pluginName);
+         }
++        // CocoPaper end
+     }
+ 
+     // This will be the end of me...
