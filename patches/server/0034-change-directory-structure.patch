@@ -1,0 +1,53 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Sat, 31 Aug 2024 13:14:18 +0200
+Subject: [PATCH] change directory structure
+
+
+diff --git a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
+index d937adbe40687546686cddb27f2ae34f2795e9db..3c7c9d4e3f9cecef6f5519cc43dc425f158cf0a2 100644
+--- a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
++++ b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
+@@ -83,7 +83,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+     static final String GLOBAL_CONFIG_FILE_NAME = "paper-global.yml";
+     static final String WORLD_DEFAULTS_CONFIG_FILE_NAME = "paper-world-defaults.yml";
+     static final String WORLD_CONFIG_FILE_NAME = "paper-world.yml";
+-    public static final String CONFIG_DIR = "config";
++    public static final String CONFIG_DIR = "paper"; // CocoPaper
+     private static final String BACKUP_DIR ="legacy-backup";
+ 
+     private static final String GLOBAL_HEADER = String.format("""
+diff --git a/src/main/java/io/papermc/paper/pluginremap/PluginRemapper.java b/src/main/java/io/papermc/paper/pluginremap/PluginRemapper.java
+index 28857d0c9b53f2068d51b8f09ef40df7a2b97502..5c47733ba9df3c9c484eca4faf086f96695d92c7 100644
+--- a/src/main/java/io/papermc/paper/pluginremap/PluginRemapper.java
++++ b/src/main/java/io/papermc/paper/pluginremap/PluginRemapper.java
+@@ -9,10 +9,7 @@ import io.papermc.paper.util.concurrent.ScalingThreadPool;
+ import java.io.BufferedInputStream;
+ import java.io.IOException;
+ import java.io.InputStream;
+-import java.nio.file.FileSystem;
+-import java.nio.file.FileSystems;
+-import java.nio.file.Files;
+-import java.nio.file.Path;
++import java.nio.file.*;
+ import java.util.ArrayList;
+ import java.util.HashMap;
+ import java.util.List;
+@@ -42,7 +39,7 @@ import static io.papermc.paper.pluginremap.InsertManifestAttribute.addNamespaceM
+ @DefaultQualifier(NonNull.class)
+ public final class PluginRemapper {
+     public static final boolean DEBUG_LOGGING = Boolean.getBoolean("Paper.PluginRemapperDebug");
+-    private static final String PAPER_REMAPPED = ".paper-remapped";
++    private static final String PAPER_REMAPPED = "paper/plugins-remapped"; // CocoPaper
+     private static final String UNKNOWN_ORIGIN = "unknown-origin";
+     private static final String LIBRARIES = "libraries";
+     private static final String EXTRA_PLUGINS = "extra-plugins";
+@@ -61,7 +58,7 @@ public final class PluginRemapper {
+     public PluginRemapper(final Path pluginsDir) {
+         this.threadPool = createThreadPool();
+         final CompletableFuture<IMappingFile> mappings = CompletableFuture.supplyAsync(PluginRemapper::loadReobfMappings, this.threadPool);
+-        final Path remappedPlugins = pluginsDir.resolve(PAPER_REMAPPED);
++        final Path remappedPlugins = Paths.get(PAPER_REMAPPED); // CocoPaper
+         this.reversedMappings = this.reversedMappingsFuture(() -> mappings, remappedPlugins, this.threadPool);
+         this.reobf = new ReobfServer(remappedPlugins.resolve(REMAP_CLASSPATH), mappings, this.threadPool);
+         this.remappedPlugins = new RemappedPluginIndex(remappedPlugins, false);
