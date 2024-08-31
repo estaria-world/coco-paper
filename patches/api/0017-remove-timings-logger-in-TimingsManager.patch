@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Niklas <57962465+niklasnieberler@users.noreply.github.com>
+Date: Sat, 31 Aug 2024 22:04:53 +0200
+Subject: [PATCH] remove timings logger in TimingsManager
+
+
+diff --git a/src/main/java/co/aikar/timings/TimingsManager.java b/src/main/java/co/aikar/timings/TimingsManager.java
+index e72ad05abada04426e32a73d02b21cb69079d268..1fdd6abadec791f7fca122ab1bcf36ea206b3d15 100644
+--- a/src/main/java/co/aikar/timings/TimingsManager.java
++++ b/src/main/java/co/aikar/timings/TimingsManager.java
+@@ -114,7 +114,7 @@ public final class TimingsManager {
+                     timings.reset(true);
+                 }
+             }
+-            Bukkit.getLogger().log(Level.INFO, "Timings Reset");
++            // Bukkit.getLogger().log(Level.INFO, "Timings Reset"); CocoPaper
+             HISTORY.clear();
+             needsFullReset = false;
+             needsRecheckEnabled = false;
